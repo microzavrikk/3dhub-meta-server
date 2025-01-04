@@ -11,13 +11,6 @@ async function bootstrap() {
     },
   });
   
-  const microserviceOptions: MicroserviceOptions = {
-    transport: Transport.NATS,
-    options: {
-      url: 'nats://localhost:4222',
-    },
-  };
-
   await app.listen();
 }
 
