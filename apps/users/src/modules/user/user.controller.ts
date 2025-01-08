@@ -24,6 +24,7 @@ export class UserController {
 
     @MessagePattern({ cmd: 'user-login' })
     async login(data: UserLoginDto): Promise<User> {
+        this.logger.log(`Received request to login user: ${JSON.stringify(data, null, 2)}`);
         return this.userAuthService.login(data);
     }
 

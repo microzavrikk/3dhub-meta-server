@@ -51,6 +51,8 @@ export class AuthService {
             sessionId
         });
 
+        this.logger.log(`Generated JWT: ${accessToken}`);
+
         return { accessToken } ;
     }
 
@@ -66,6 +68,7 @@ export class AuthService {
     }
 
     private generateJWT(payload: JWTPayload): string {
-        return this.jwtService.sign(payload, {});
+        return this.jwtService.sign(payload, {privateKey: process.env.JWT_TOKEN,
+             expiresIn: process.env.JWT_EXPIRES_IN});  
     }
 }

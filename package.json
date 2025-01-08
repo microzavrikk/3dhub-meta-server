@@ -66,7 +66,14 @@
     "prisma:generate:products": "npx dotenv -e ./apps/products/.env -- npx prisma generate --schema ./apps/users/src/utils/prisma/products.prisma",
     "migrate:dev:create:products": "npx dotenv -e ./apps/products/.env -- npx prisma migrate dev --create-only --schema ./apps/users/src/utils/prisma/products.prisma",
     "migrate:deploy:products": "npx dotenv -e ./apps/products/.env -- npx prisma migrate deploy --preview-feature --schema ./apps/users/src/utils/prisma/products.prisma",
-    "migrate:reset:products": "npx dotenv -e ./apps/products/.env -- npx prisma migrate reset --preview-feature --schema ./apps/users/src/utils/prisma/products.prisma"
+    "migrate:reset:products": "npx dotenv -e ./apps/products/.env -- npx prisma migrate reset --preview-feature --schema ./apps/users/src/utils/prisma/products.prisma",
+    "----   storage  ----": "",
+    "start:debug:storage": "npx dotenv -e ./apps/products/.env -- nest start products --debug --watch",
+    "build:storage": "nest build products",
+    "prisma:generate:storage": "npx dotenv -e ./apps/storage/.env -- npx prisma generate --schema ./apps/storage/src/utils/prisma/storage.prisma",
+    "migrate:dev:create:storage": "npx dotenv -e ./apps/storage/.env -- npx prisma migrate dev --create-only --schema ./apps/storage/src/utils/prisma/storage.prisma",
+    "migrate:deploy:storage": "npx dotenv -e ./apps/storage/.env -- npx prisma migrate deploy --preview-feature --schema ./apps/storage/src/utils/prisma/storage.prisma",
+    "migrate:reset:storage": "npx dotenv -e ./apps/storage/.env -- npx prisma migrate reset --preview-feature --schema ./apps/storage/src/utils/prisma/storage.prisma"
   },
   "keywords": [],
   "author": "",

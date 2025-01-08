@@ -17,12 +17,15 @@ export class AuthMutationResolver {
 
     @ResolveField('register')
     async register(@Args('data') data: UserRegisterInput): Promise<boolean> {
+        this.logger.log("Register request received");
         return this.authService.register(data);
     }
     
     @ResolveField('login')
     async login(@Args('data') data: UserLoginInput): Promise<TokenResponse> {
-        console.log("пришел запрос на регистрацию")
-        return this.authService.login(data);
+        this.logger.log("Login request received");
+        const returnData = await this.authService.login(data);
+        this.logger.log(JSON.stringify(returnData, null, 2));
+        return returnData;
     }
 }
