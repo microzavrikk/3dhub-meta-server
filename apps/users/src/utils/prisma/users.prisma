@@ -18,6 +18,7 @@ model User {
   email      String   @unique
   username   String   @unique
   password   String
+  secretKey  String   @default(cuid()) 
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   isVerified Boolean  @default(false)
@@ -38,3 +39,4 @@ enum Role {
   ADMIN
   USER
 }
+

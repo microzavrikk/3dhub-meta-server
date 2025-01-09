@@ -9,12 +9,14 @@ const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 export class UserAuthService {
     async register(payload: UserRegisterDto): Promise<UserRegisterDto> {
-        const hashedPassword = await bcrypt.hash(payload.password, 10);
+        const salt = await bcrypt.genSalt();
+        const hashedPassword = await bcrypt.hash(payload.password, salt);
         const user = await prisma.user.create({
             data: {
                 email: payload.email,
                 username: payload.username,
                 password: hashedPassword,
+                secretKey: salt,
             },
         });
 
@@ -44,3 +46,4 @@ export class UserAuthService {
         }
     }
 }
+

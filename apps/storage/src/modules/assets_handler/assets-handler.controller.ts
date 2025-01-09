@@ -30,15 +30,17 @@ export class UserController {
     @MessagePattern({ cmd: 'get-asset-by-id' })
     async getAssetById(assetId: string): Promise<Asset | null> {
         // Logic to get an asset by its ID
+        return null; // Placeholder return value
     }
 
     @MessagePattern({ cmd: 'get-assets-by-user' })
     async getAssetsByUser(userId: string): Promise<Asset[]> {
         // Logic to get all assets by a specific user
+        return []; // Placeholder return value
     }
 
-    @MessagePattern({ cmd: 'get-assets-by-category' })
     async getAssetsByCategory(category: AssetCategory): Promise<Asset[]> {
         // Logic to get all assets by category
+        return []; // Placeholder return value
     }
 }

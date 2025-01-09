@@ -14,6 +14,7 @@ export class AssetsStorageService {
       ...data,
       uploadDate: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
+      publicAccess: data.publicAccess ?? false,
     };
     this.assets.push(newAsset);
     return true;
@@ -27,7 +28,17 @@ export class AssetsStorageService {
     }
     this.assets[index] = {
       ...this.assets[index],
-      ...data,
+      name: data.name ?? this.assets[index].name,
+      description: data.description ?? this.assets[index].description,
+      fileKey: data.fileKey ?? this.assets[index].fileKey,
+      bucketName: data.bucketName ?? this.assets[index].bucketName,
+      fileSize: data.fileSize ?? this.assets[index].fileSize,
+      fileType: data.fileType ?? this.assets[index].fileType,
+      tags: data.tags ?? this.assets[index].tags,
+      ownerId: data.ownerId ?? this.assets[index].ownerId,
+      publicAccess: data.publicAccess ?? this.assets[index].publicAccess,
+      thumbnailUrl: data.thumbnailUrl ?? this.assets[index].thumbnailUrl,
+      metadata: data.metadata ?? this.assets[index].metadata,
       updatedAt: new Date().toISOString(),
     };
     return true;
