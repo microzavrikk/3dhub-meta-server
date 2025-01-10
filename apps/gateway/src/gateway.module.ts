@@ -5,6 +5,7 @@ import { GraphqlModule } from './graphql/graphql.module';
 import { SessionModule } from './modules/session/session.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { AssetsStorageModule } from './modules/assets-storage/assets-storage.module';
 
 @Module({
   imports: [
@@ -20,7 +21,8 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
     ]),
     GraphqlModule,
     SessionModule,
-    AuthModule
+    AuthModule,
+    AssetsStorageModule
   ],
   controllers: [GatewayController],
   providers: [GatewayService],

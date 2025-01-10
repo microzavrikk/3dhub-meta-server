@@ -17,7 +17,6 @@ input UserLoginInput {
   email: String!
   password: String!
 }
-
 type TokenResponse {
   accessToken: String!
 }
