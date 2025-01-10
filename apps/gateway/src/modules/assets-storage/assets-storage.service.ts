@@ -54,21 +54,6 @@ export class AssetsStorageService {
     return true;
   }
 
-  async getAssetById(assetId: string): Promise<Asset | null> {
-    this.logger.log(`Getting asset by ID: ${assetId}`);
-    return this.assets.find(asset => asset.id === assetId) || null;
-  }
-
-  async getAssetsByUser(userId: string): Promise<Asset[]> {
-    this.logger.log(`Getting assets by user ID: ${userId}`);
-    return this.assets.filter(asset => asset.ownerId === userId);
-  }
-
-  async getAssetsByCategory(category: string): Promise<Asset[]> {
-    this.logger.log(`Getting assets by category: ${category}`);
-    return this.assets.filter(asset => asset.tags.includes(category));
-  }
-
   private generateId(): string {
     return Math.random().toString(36).substr(2, 9);
   }

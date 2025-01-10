@@ -3,13 +3,14 @@ import { Controller, Inject } from "@nestjs/common";
 import { User } from "@prisma/client";
 import { Logger } from "@nestjs/common";
 import { CreateAssetDto, UpdateAssetDto, Asset, AssetCategory } from './types'
+import { AssetsHandlerService } from "./assets-handler.service";
 
 @Controller()
 export class UserController {
     private readonly logger = new Logger(UserController.name);
 
     constructor(
-
+        private readonly assetsHandlerService: AssetsHandlerService
     ) {}
 
     @MessagePattern({ cmd: 'upload-asset' })
