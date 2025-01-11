@@ -6,6 +6,8 @@ export class HealthCheck {
     private microservices: string[] = [
         'users',
         'storage',
+        'products',
+        'orders'
     ].sort();
     private startTime: string;
 

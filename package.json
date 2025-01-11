@@ -80,7 +80,14 @@
     "prisma:generate:storage": "npx dotenv -e ./apps/storage/.env -- npx prisma generate --schema ./apps/storage/src/utils/prisma/storage.prisma",
     "migrate:dev:create:storage": "npx dotenv -e ./apps/storage/.env -- npx prisma migrate dev --create-only --schema ./apps/storage/src/utils/prisma/storage.prisma",
     "migrate:deploy:storage": "npx dotenv -e ./apps/storage/.env -- npx prisma migrate deploy --preview-feature --schema ./apps/storage/src/utils/prisma/storage.prisma",
-    "migrate:reset:storage": "npx dotenv -e ./apps/storage/.env -- npx prisma migrate reset --preview-feature --schema ./apps/storage/src/utils/prisma/storage.prisma"
+    "migrate:reset:storage": "npx dotenv -e ./apps/storage/.env -- npx prisma migrate reset --preview-feature --schema ./apps/storage/src/utils/prisma/storage.prisma",
+    "----   orders  ----": "",
+    "start:debug:orders": "npx dotenv -e ./apps/orders/.env -- nest start orders --debug --watch",
+    "build:orders": "nest build storage",
+    "prisma:generate:orders": "npx dotenv -e ./apps/orders/.env -- npx prisma generate --schema ./apps/orders/src/utils/prisma/orders.prisma",
+    "migrate:dev:create:orders": "npx dotenv -e ./apps/orders/.env -- npx prisma migrate dev --create-only --schema ./apps/orders/src/utils/prisma/orders.prisma",
+    "migrate:deploy:orders": "npx dotenv -e ./apps/orders/.env -- npx prisma migrate deploy --preview-feature --schema ./apps/orders/src/utils/prisma/orders.prisma",
+    "migrate:reset:orders": "npx dotenv -e ./apps/orders/.env -- npx prisma migrate reset --preview-feature --schema ./apps/orders/src/utils/prisma/orders.prisma"
   },
   "keywords": [],
   "author": "",

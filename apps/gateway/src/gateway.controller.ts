@@ -25,7 +25,6 @@ export class GatewayController {
 
   @Get('/health')
   async healthCheck(@Res() response: Response) {
-    console.log("health check request received");
     const statuses = await this.healthChecker.checkAllNodes();
     const isAllNodesUp = statuses.downNodes.length === 0;
     response.status(isAllNodesUp ? 200 : 500).send(statuses);
