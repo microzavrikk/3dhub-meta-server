@@ -13,7 +13,6 @@ export class GatewayController {
       transport: Transport.NATS,
       options: {
         servers: ['nats://localhost:4222'],
-        queue: 'gateway_queue',
       },
     });
     this.healthChecker = new HealthCheck(client, {});
