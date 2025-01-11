@@ -5,11 +5,7 @@ import { HealthIndicator } from "./health-indicator.base";
 export class HealthCheck {
     private microservices: string[] = [
         'users',
-        'products',
         'storage',
-        'payment',
-        'orders',
-        'search-service',
     ].sort();
     private startTime: string;
 

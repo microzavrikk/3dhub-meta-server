@@ -7,16 +7,15 @@ import { ClientProxy, ClientProxyFactory, Transport } from '@nestjs/microservice
 @Controller()
 export class GatewayController {
   private readonly healthChecker: HealthCheck;
-
+  
   constructor(private readonly gatewayService: GatewayService) {
     const client: ClientProxy = ClientProxyFactory.create({
-      transport: Transport.TCP,
+      transport: Transport.NATS,
       options: {
-        host: 'localhost',
-        port: 8877,
+        servers: ['nats://localhost:4222'],
+        queue: 'gateway_queue',
       },
     });
-
     this.healthChecker = new HealthCheck(client, {});
   }
 
@@ -31,7 +30,6 @@ export class GatewayController {
     const statuses = await this.healthChecker.checkAllNodes();
     const isAllNodesUp = statuses.downNodes.length === 0;
     response.status(isAllNodesUp ? 200 : 500).send(statuses);
-
     return response;
   }
 }

@@ -16,7 +16,7 @@ export class AuthMutationResolver {
     }
 
     @ResolveField('register')
-    async register(@Args('data') data: UserRegisterInput): Promise<boolean> {
+    async register(@Args('data') data: UserRegisterInput): Promise<TokenResponse> {
         this.logger.log("Register request received");
         return this.authService.register(data);
     }

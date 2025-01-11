@@ -3,7 +3,7 @@ type Mutation {
 }
 
 type AuthMutation {
-  register(data: UserRegisterInput!): Boolean!
+  register(data: UserRegisterInput!): TokenResponse!
   login(data: UserLoginInput!): TokenResponse!
 }
 

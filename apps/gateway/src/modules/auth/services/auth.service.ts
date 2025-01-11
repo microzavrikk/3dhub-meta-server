@@ -6,6 +6,7 @@ import { JWTPayload, JWTStrategyValidatePayload, LoginPayload, RegisterPayload, 
 import { ClientProxy } from "@nestjs/microservices";
 import { Inject } from "@nestjs/common";
 import { Logger } from "@nestjs/common";
+import { MailService } from "../../mail/mail.service";
 
 @Injectable()
 export class AuthService {
@@ -14,10 +15,11 @@ export class AuthService {
     constructor(
         private jwtService: JwtService,
         private sessionService: SessionService,
+        private mailService: MailService,
         @Inject('USER_SERVICE') private readonly client: ClientProxy
     ) {}
 
-    async register(data: RegisterPayload): Promise<boolean> {
+    async register(data: RegisterPayload): Promise<TokenResponse> {
         this.logger.log(`Sending request to find user by username: ${data.username}`);
         let user = await this.client.send({ cmd: 'user-find-by-username' }, data.username).toPromise();
         this.logger.log(`Received response: ${JSON.stringify(user, null, 2)}`);
@@ -32,7 +34,12 @@ export class AuthService {
             throw new HttpException(AuthError.CANNOT_REGISTER, HttpStatus.BAD_REQUEST);
         }
 
-        return true;
+        const payload = { username: user.username, sub: user.id };
+        const accessToken = this.jwtService.sign(payload);
+
+        this.mailService.sendUserConfirmation(user, accessToken);
+
+        return { accessToken };
     }
 
     async login(data: LoginPayload): Promise<TokenResponse> {

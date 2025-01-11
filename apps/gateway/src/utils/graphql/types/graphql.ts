@@ -81,7 +81,7 @@ export abstract class IMutation {
 }
 
 export class AssetsStorageMutation {
-    uploadAsset?: boolean;
+    createAsset?: boolean;
     updateAsset?: boolean;
     deleteAsset?: boolean;
 }
@@ -110,7 +110,7 @@ export class Asset {
 }
 
 export class AuthMutation {
-    register?: boolean;
+    register?: TokenResponse;
     login?: TokenResponse;
 }
 

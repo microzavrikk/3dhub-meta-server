@@ -12,7 +12,7 @@ export class UsersController {
       transport: Transport.TCP,
       options: {
         host: 'localhost',
-        port: 8877,
+        port: 8878,
       },
     });
 

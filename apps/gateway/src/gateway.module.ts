@@ -12,10 +12,9 @@ import { AssetsStorageModule } from './modules/assets-storage/assets-storage.mod
     ClientsModule.register([
       {
         name: 'USER_SERVICE',
-        transport: Transport.TCP,
+        transport: Transport.NATS,
         options: {
-          host: 'localhost',
-          port: 8877
+          servers: ['nats://localhost:4222'],
         }
       },
     ]),

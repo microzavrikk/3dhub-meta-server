@@ -1,20 +1,18 @@
 import { NestFactory } from '@nestjs/core';
 import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { ProductsModule } from './products.module';
+import { Logger } from '@nestjs/common';
 
 async function bootstrap() {
-  const app = await NestFactory.create(ProductsModule);
-  
-  const microserviceOptions: MicroserviceOptions = {
+  const logger = new Logger('Products');
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(ProductsModule, {
     transport: Transport.NATS,
     options: {
-      url: 'nats://localhost:4222',
+      servers: ['nats://localhost:4222'],
     },
-  };
-
-  app.connectMicroservice(microserviceOptions);
-  await app.startAllMicroservices();
-  await app.listen(process.env.port ?? 4007);
+  });
+  await app.listen();
+  logger.log(`Products is running on: with NATS communication`);
 }
 
 bootstrap();

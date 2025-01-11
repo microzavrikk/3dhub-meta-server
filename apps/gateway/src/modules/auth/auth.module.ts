@@ -1,36 +1,38 @@
-import { Module } from "@nestjs/common";
-import { JwtModule } from "@nestjs/jwt";
-import { PassportModule } from "@nestjs/passport";
-import { AuthGuard } from "./decorator/auth.guard";
-import { AuthMutationResolver } from "./resolvers/auth.mutation.resolver";
-import { AuthService } from "./services/auth.service";
-import { JwtStrategy } from "./strategy/jwt.strategy";
-import { UsersApiModule } from "../../../../users/src/modules/user/user.module";
+import { Module } from '@nestjs/common';
+import { PassportModule } from '@nestjs/passport';
+import { JwtModule } from '@nestjs/jwt';
+import { AuthGuard } from './decorator/auth.guard';
+import { AuthMutationResolver } from './resolvers/auth.mutation.resolver';
+import { AuthService } from './services/auth.service';
+import { JwtStrategy } from './strategy/jwt.strategy';
+import { UsersApiModule } from '../../../../users/src/modules/user/user.module';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
-    imports: [
-        PassportModule.register({
-            defaultStrategy: 'jwt',
-            property: 'user',
-            session: false
-        }),
-        JwtModule.registerAsync({
-            useFactory: () => ({
-                secret: process.env.JWT_SECRET,
-                signOptions: {
-                    expiresIn: process.env.EXPIRES_IN
-                },
-            }),
-        }),
-        UsersApiModule 
-    ],
-    controllers: [],
-    providers: [
-        AuthGuard,
-        AuthMutationResolver,
-        AuthService,
-        JwtStrategy
-    ],
-    exports: [AuthService],
+  imports: [
+    PassportModule.register({
+      defaultStrategy: 'jwt',
+      property: 'user',
+      session: false,
+    }),
+    JwtModule.registerAsync({
+      useFactory: () => ({
+        secret: process.env.JWT_TOKEN,
+        signOptions: {
+          expiresIn: process.env.JWT_EXPIRES_IN,
+        },
+      }),
+    }),
+    UsersApiModule,
+    MailModule, // Import MailModule
+  ],
+  controllers: [],
+  providers: [
+    AuthGuard,
+    AuthMutationResolver,
+    AuthService,
+    JwtStrategy,
+  ],
+  exports: [AuthService], // Export only AuthService
 })
 export class AuthModule {}
