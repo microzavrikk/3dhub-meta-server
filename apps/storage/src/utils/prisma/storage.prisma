@@ -16,6 +16,7 @@ model ThirdModel {
   id             String   @id @default(cuid()) // Unique identifier for the 3D model
   name           String   // Name of the 3D model
   description    String?  // Optional description of the model
+  category       String   // 3D Model Category
   fileKey        String   // S3 key for the file
   bucketName     String   // S3 bucket where the model is stored
   fileSize       Int      // Size of the model file in bytes

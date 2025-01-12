@@ -17,7 +17,7 @@ export class AssetsHandlerService {
   async createAsset(data: CreateAssetDto): Promise<Asset> {
     this.logger.log(`Creating asset: ${JSON.stringify(data)}`);
 
-    const fileKey = `${data.ownerId}/${data.name}`;
+    const fileKey = `${data.category}/${data.ownerId}/${data.name}`;
     await this.assetsHandlerS3Repository.uploadFile(data.file, fileKey);
 
     const assetData = { ...data, fileKey };

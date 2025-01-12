@@ -12,6 +12,7 @@ export class CreateAssetInput {
     file: Upload;
     name: string;
     description?: Nullable<string>;
+    category: string;
     fileKey: string;
     bucketName: string;
     fileSize: number;
@@ -27,6 +28,7 @@ export class UpdateAssetInput {
     id: string;
     name?: Nullable<string>;
     description?: Nullable<string>;
+    category: string;
     fileKey?: Nullable<string>;
     bucketName?: Nullable<string>;
     fileSize?: Nullable<number>;

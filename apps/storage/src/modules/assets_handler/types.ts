@@ -4,6 +4,7 @@ export type Asset = {
   id: string;
   name: string;
   description?: string;
+  category: string
   fileKey: string;
   bucketName: string;
   fileSize: number;
@@ -21,6 +22,7 @@ export type CreateAssetDto = {
   file: Express.Multer.File;
   name: string;
   description?: string;
+  category: string
   fileKey: string;
   bucketName: string;
   fileSize: number;

@@ -19,10 +19,11 @@ export class AssetsHandlerS3Repository {
 
   async uploadFile(file: Express.Multer.File, fileKey: string): Promise<AWS.S3.ManagedUpload.SendData> {
     this.logger.log(`Uploading file: ${fileKey}, ${file.mimetype}, ${file.buffer ? 'Buffer exists' : 'Buffer is missing'}`);
+    this.logger.log(`File size: ${file}`);
     const params = {
       Bucket: this.bucketName,
       Key: fileKey,
-      Body: file.buffer,
+      Body: file,
       ContentType: file.mimetype,
     };
 
