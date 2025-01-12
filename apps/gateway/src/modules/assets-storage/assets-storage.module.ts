@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { AssetsStorageMutationResolver } from "./assets-storage.mutation.resolver";
-import { AssetsStorageQueryResolver } from "./assets-storage.query.resolver";
+import { AssetsStorageMutationResolver } from "./resolvers/assets-storage.mutation.resolver";
+import { AssetsStorageQueryResolver } from "./resolvers/assets-storage.query.resolver";
 import { AssetsStorageService } from "./service/assets-storage.mutation.service";
 
 @Module({
