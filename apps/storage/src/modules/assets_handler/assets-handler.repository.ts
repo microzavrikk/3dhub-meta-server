@@ -7,7 +7,7 @@ export class AssetsHandlerRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async createAsset(data: CreateAssetDto): Promise<any> {
-    return this.prisma.model3D.create({
+    return this.prisma.thirdModel.create({
       data: {
         name: data.name,
         description: data.description,
@@ -25,7 +25,7 @@ export class AssetsHandlerRepository {
   }
 
   async updateAsset(id: string, data: UpdateAssetDto): Promise<any> {
-    return this.prisma.model3D.update({
+    return this.prisma.thirdModel.update({
       where: { id },
       data: {
         name: data.name,
@@ -44,25 +44,25 @@ export class AssetsHandlerRepository {
   }
 
   async deleteAsset(id: string): Promise<any> {
-    return this.prisma.model3D.delete({
+    return this.prisma.thirdModel.delete({
       where: { id },
     });
   }
 
   async getAssetById(id: string): Promise<any | null> {
-    return this.prisma.model3D.findUnique({
+    return this.prisma.thirdModel.findUnique({
       where: { id },
     });
   }
 
   async getAssetsByUser(userId: string): Promise<any[]> {
-    return this.prisma.model3D.findMany({
+    return this.prisma.thirdModel.findMany({
       where: { ownerId: userId },
     });
   }
 
   async getAssetsByCategory(category: string): Promise<any[]> {
-    return this.prisma.model3D.findMany({
+    return this.prisma.thirdModel.findMany({
       where: { tags: { has: category } },
     });
   }
