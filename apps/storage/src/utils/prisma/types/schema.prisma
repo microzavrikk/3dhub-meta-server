@@ -1,0 +1,30 @@
+// Prisma schema file for storage microservice
+// Documentation: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  output          = "./types"
+  previewFeatures = ["tracing"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ThirdModel {
+  id           String   @id @default(cuid()) // Unique identifier for the 3D model
+  name         String // Name of the 3D model
+  description  String? // Optional description of the model
+  fileKey      String // S3 key for the file
+  bucketName   String // S3 bucket where the model is stored
+  fileSize     Int // Size of the model file in bytes
+  fileType     String // MIME type of the model file (e.g., "application/octet-stream")
+  uploadDate   DateTime @default(now()) // Timestamp of when the model was uploaded
+  updatedAt    DateTime @updatedAt // Timestamp of the last update
+  tags         String[] // Tags or labels for categorizing the model
+  ownerId      String // User or system ID that owns the model
+  publicAccess Boolean  @default(false) // Indicates if the model is publicly accessible
+  thumbnailUrl String? // Optional URL for the model's thumbnail
+  metadata     Json? // Additional metadata about the model (e.g., dimensions, materials)
+}

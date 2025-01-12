@@ -5,7 +5,7 @@ import { UserFindDto } from "./models/dto/user-find.dto";
 import { UserLoginDto } from "./models/dto/user.login.dto";
 import { UserRegisterDto } from "./models/dto/user-register.dto";
 import { UserAuthService } from "./user.auth.service";
-import { User } from "@prisma/client";
+import { User } from "../../utils/prisma/types";
 import { Logger } from "@nestjs/common";
 
 @Controller()

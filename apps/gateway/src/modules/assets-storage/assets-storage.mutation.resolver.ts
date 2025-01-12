@@ -1,7 +1,7 @@
 import { AssetsStorageMutation, CreateAssetInput, UpdateAssetInput } from "../../utils/graphql/types/graphql";
 import { Args, Mutation, ResolveField, Resolver } from "@nestjs/graphql";
 import { Logger } from "@nestjs/common";
-import { AssetsStorageService } from "./assets-storage.service";
+import { AssetsStorageService } from "./service/assets-storage.mutation.service";
 
 @Resolver(() => AssetsStorageMutation)
 export class AssetsStorageMutationResolver {

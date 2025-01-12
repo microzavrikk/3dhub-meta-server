@@ -2,7 +2,9 @@
 // Documentation: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  output          = "./types"
+  previewFeatures = ["tracing"]
 }
 
 datasource db {
@@ -10,7 +12,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Model3D {
+model ThirdModel {
   id             String   @id @default(cuid()) // Unique identifier for the 3D model
   name           String   // Name of the 3D model
   description    String?  // Optional description of the model

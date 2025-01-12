@@ -1,13 +1,12 @@
 import { MessagePattern, ClientProxy } from "@nestjs/microservices";
 import { Controller, Inject } from "@nestjs/common";
-import { User } from "@prisma/client";
 import { Logger } from "@nestjs/common";
-import { CreateAssetDto, UpdateAssetDto, Asset, AssetCategory } from './types'
+import { CreateAssetDto, UpdateAssetDto, Asset, AssetCategory } from './types';
 import { AssetsHandlerService } from "./assets-handler.service";
 
 @Controller()
-export class UserController {
-    private readonly logger = new Logger(UserController.name);
+export class AssetsHandlerController {
+    private readonly logger = new Logger(AssetsHandlerController.name);
 
     constructor(
         private readonly assetsHandlerService: AssetsHandlerService
@@ -15,33 +14,65 @@ export class UserController {
 
     @MessagePattern({ cmd: 'upload-asset' })
     async uploadAsset(data: CreateAssetDto): Promise<boolean> {
-        return true;
+        this.logger.log(`Uploading asset: ${JSON.stringify(data)}`);
+        try {
+            await this.assetsHandlerService.createAsset(data);
+            return true;
+        } catch (error: any) {
+            this.logger.error(`Failed to upload asset: ${error.message}`);
+            return false;
+        }
     }
 
     @MessagePattern({ cmd: 'update-asset' })
     async updateAsset(data: UpdateAssetDto): Promise<boolean> {
-        return true;
+        try {
+            await this.assetsHandlerService.updateAsset(data.id, data);
+            return true;
+        } catch (error: any) {
+            this.logger.error(`Failed to update asset: ${error.message}`);
+            return false;
+        }
     }
 
     @MessagePattern({ cmd: 'delete-asset' })
     async deleteAsset(assetId: string): Promise<boolean> {
-        return true;
+        try {
+            await this.assetsHandlerService.deleteAsset(assetId);
+            return true;
+        } catch (error: any) {
+            this.logger.error(`Failed to delete asset: ${error.message}`);
+            return false;
+        }
     }
 
     @MessagePattern({ cmd: 'get-asset-by-id' })
     async getAssetById(assetId: string): Promise<Asset | null> {
-        // Logic to get an asset by its ID
-        return null; // Placeholder return value
+        try {
+            return await this.assetsHandlerService.getAssetById(assetId);
+        } catch (error: any) {
+            this.logger.error(`Failed to get asset by ID: ${error.message}`);
+            return null;
+        }
     }
 
     @MessagePattern({ cmd: 'get-assets-by-user' })
     async getAssetsByUser(userId: string): Promise<Asset[]> {
-        // Logic to get all assets by a specific user
-        return []; // Placeholder return value
+        try {
+            return await this.assetsHandlerService.getAssetsByUser(userId);
+        } catch (error: any) {
+            this.logger.error(`Failed to get assets by user: ${error.message}`);
+            return [];
+        }
     }
 
+    @MessagePattern({ cmd: 'get-assets-by-category' })
     async getAssetsByCategory(category: AssetCategory): Promise<Asset[]> {
-        // Logic to get all assets by category
-        return []; // Placeholder return value
+        try {
+            return await this.assetsHandlerService.getAssetsByCategory(category.category);
+        } catch (error: any) {
+            this.logger.error(`Failed to get assets by category: ${error.message}`);
+            return [];
+        }
     }
 }
