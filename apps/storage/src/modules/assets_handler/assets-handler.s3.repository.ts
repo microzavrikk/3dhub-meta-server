@@ -18,6 +18,7 @@ export class AssetsHandlerS3Repository {
   }
 
   async uploadFile(file: Express.Multer.File, fileKey: string): Promise<AWS.S3.ManagedUpload.SendData> {
+    this.logger.log(`Uploading file: ${fileKey}, ${file.mimetype}, ${file.buffer ? 'Buffer exists' : 'Buffer is missing'}`);
     const params = {
       Bucket: this.bucketName,
       Key: fileKey,
@@ -47,6 +48,48 @@ export class AssetsHandlerS3Repository {
     } catch (error: any) {
       this.logger.error(`Failed to delete file. ${error.message}`);
       throw new Error(`Failed to delete file. ${error.message}`);
+    }
+  }
+
+  async getFileByUserId(userId: string): Promise<AWS.S3.GetObjectOutput> {
+    const params = {
+      Bucket: this.bucketName,
+      Prefix: `${userId}/`,
+    };
+
+    try {
+      const data = await this.s3.listObjectsV2(params).promise();
+      if (data.Contents && data.Contents.length > 0) {
+        const fileParams = {
+          Bucket: this.bucketName,
+          Key: data.Contents[0].Key!,
+        };
+        const fileData = await this.s3.getObject(fileParams).promise();
+        this.logger.log(`File retrieved successfully for user: ${userId}`);
+        return fileData;
+      } else {
+        throw new Error(`No files found for user: ${userId}`);
+      }
+    } catch (error: any) {
+      this.logger.error(`Failed to retrieve file for user: ${error.message}`);
+      throw new Error(`Failed to retrieve file for user: ${error.message}`);
+    }
+  }
+
+  async getFileByUserIdAndFileName(userId: string, fileName: string): Promise<AWS.S3.GetObjectOutput> {
+    const fileKey = `${userId}/${fileName}`;
+    const params = {
+      Bucket: this.bucketName,
+      Key: fileKey,
+    };
+
+    try {
+      const data = await this.s3.getObject(params).promise();
+      this.logger.log(`File retrieved successfully: ${fileKey}`);
+      return data;
+    } catch (error: any) {
+      this.logger.error(`Failed to retrieve file: ${error.message}`);
+      throw new Error(`Failed to retrieve file: ${error.message}`);
     }
   }
 }
