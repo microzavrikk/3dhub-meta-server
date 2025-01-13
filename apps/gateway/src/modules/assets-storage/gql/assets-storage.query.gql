@@ -6,8 +6,19 @@ type Query {
 }
 
 type AssetsStorageQuery {
-  getFileByUserId(category: String!, userId: String!): FileOutput!
-  getFileByUserIdAndFileName(category: String!, userId: String!, fileName: String!): FileOutput!
+  getFileByUserId(input: GetFileByUserIdDto!): FileOutput!
+  getFileByUserIdAndFileName(input: GetFileByUserIdAndFileNameDto!): FileOutput!
+}
+
+input GetFileByUserIdDto {
+  category: String!
+  userId: String!
+}
+
+input GetFileByUserIdAndFileNameDto {
+  category: String!
+  userId: String!
+  fileName: String!
 }
 
 type Asset {

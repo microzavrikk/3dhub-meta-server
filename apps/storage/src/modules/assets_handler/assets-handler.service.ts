@@ -1,10 +1,12 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { ClientProxy } from '@nestjs/microservices';
 import { AssetsHandlerRepository } from './assets-handler.repository';
 import { AssetsHandlerS3Repository } from './assets-handler.s3.repository';
 import { CreateAssetDto, UpdateAssetDto, Asset } from './types';
 import * as AWS from 'aws-sdk';
-
+import { GetFileByUserIdDto } from '../../../../gateway/src/modules/assets-storage/dto/assets-get-by-id.dto';
+import { GetFileByUserIdAndFileNameDto } from '../../../../gateway/src/modules/assets-storage/dto/assets-get-by-filename.dto';
 
 @Injectable()
 export class AssetsHandlerService {
@@ -14,6 +16,7 @@ export class AssetsHandlerService {
     private readonly assetsHandlerRepository: AssetsHandlerRepository,
     private readonly assetsHandlerS3Repository: AssetsHandlerS3Repository,
     private readonly configService: ConfigService,
+    @Inject('ASSETS_HANDLER_SERVICE') private readonly client: ClientProxy
   ) {}
 
   async createAsset(data: CreateAssetDto): Promise<Asset> {
@@ -55,11 +58,31 @@ export class AssetsHandlerService {
     await this.assetsHandlerRepository.deleteAsset(id);
   }
 
-  async getFileByUserId(category: string, userId: string): Promise<AWS.S3.GetObjectOutput> {
-    return this.assetsHandlerS3Repository.getFileByUserId(category, userId);
+  async getFileByUserId(input: GetFileByUserIdDto): Promise<AWS.S3.GetObjectOutput> {
+    try {
+      const categories = await this.client.send({ cmd: 'get-categories' }, {}).toPromise();
+      if (!categories.includes(input.category)) {
+        throw new Error(`Category ${input.category} not found`);
+      } else {
+      }
+    } catch (error: any) {
+      this.logger.error(`Failed to get file by userId: ${error.message}`);
+      throw new Error(`Failed to get file by userId: ${error.message}`);
+    }
+    return this.assetsHandlerS3Repository.getFileByUserId(input.category, input.userId);
   }
 
-  async getFileByUserIdAndFileName(category: string, userId: string, filename: string): Promise<AWS.S3.GetObjectOutput> {
-    return this.assetsHandlerS3Repository.getFileByUserIdAndFileName(category, userId, filename);
+  async getFileByUserIdAndFileName(input: GetFileByUserIdAndFileNameDto): Promise<AWS.S3.GetObjectOutput> {
+    this.logger.log(`Getting file by userId: ${input.userId}, fileName: ${input.filename} in category: ${input.category}`);
+    try {
+      const categories = await this.client.send({ cmd: 'get-categories' }, {}).toPromise();
+      if (!categories.includes(input.category)) {
+        throw new Error(`Category ${input.category} not found`);
+      }
+    } catch (error: any) {
+      this.logger.error(`Failed to get file by userId and fileName: ${error.message}`);
+      throw new Error(`Failed to get file by userId and fileName: ${error.message}`);
+    }
+    return this.assetsHandlerS3Repository.getFileByUserIdAndFileName(input.category, input.userId, input.filename);
   }
 }

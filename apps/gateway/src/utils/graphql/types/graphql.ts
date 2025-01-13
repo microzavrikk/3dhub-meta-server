@@ -40,6 +40,17 @@ export class UpdateAssetInput {
     metadata?: Nullable<JSON>;
 }
 
+export class GetFileByUserIdDto {
+    category: string;
+    userId: string;
+}
+
+export class GetFileByUserIdAndFileNameDto {
+    category: string;
+    userId: string;
+    fileName: string;
+}
+
 export class UserRegisterInput {
     email: string;
     username: string;

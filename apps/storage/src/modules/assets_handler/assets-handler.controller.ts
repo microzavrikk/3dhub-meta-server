@@ -3,6 +3,9 @@ import { Controller, Inject } from "@nestjs/common";
 import { Logger } from "@nestjs/common";
 import { CreateAssetDto, UpdateAssetDto, Asset, AssetCategory } from './types';
 import { AssetsHandlerService } from "./assets-handler.service";
+import { GetFileByUserIdDto } from '../../../../gateway/src/modules/assets-storage/dto/assets-get-by-id.dto';
+import { GetFileByUserIdAndFileNameDto } from '../../../../gateway/src/modules/assets-storage/dto/assets-get-by-filename.dto';
+
 
 @Controller()
 export class AssetsHandlerController {
@@ -36,22 +39,22 @@ export class AssetsHandlerController {
     }
 
     @MessagePattern({ cmd: 'get-file-by-user-id' })
-    async getFileByUserId(category: string, userId: string): Promise<AWS.S3.GetObjectOutput> {
+    async getFileByUserId(input: GetFileByUserIdDto): Promise<AWS.S3.GetObjectOutput> {
         try {
-            return await this.assetsHandlerService.getFileByUserId(category, userId);
+            return await this.assetsHandlerService.getFileByUserId(input);
         } catch (error: any) {
             this.logger.error(`Failed to get asset: ${error.message}`);
         }
-        return { }
+        return {};
     }
 
     @MessagePattern({ cmd: 'get-file-by-user-id-and-file-name' })
-    async getFileByUserIdAndFileName(category: string, userId: string, filename: string): Promise<AWS.S3.GetObjectOutput> {
+    async getFileByUserIdAndFileName(input: GetFileByUserIdAndFileNameDto): Promise<AWS.S3.GetObjectOutput> {
         try {
-            return await this.assetsHandlerService.getFileByUserIdAndFileName(category, userId, filename);
+            return await this.assetsHandlerService.getFileByUserIdAndFileName(input);
         } catch (error: any) {
             this.logger.error(`Failed to get asset: ${error.message}`);
-            return { }
+            return {};
         }
     }
 }

@@ -1,6 +1,8 @@
 import { Injectable, Logger, Inject } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import * as AWS from 'aws-sdk';
+import { GetFileByUserIdDto } from "../dto/assets-get-by-id.dto"
+import { GetFileByUserIdAndFileNameDto } from "../dto/assets-get-by-filename.dto"
 
 @Injectable()
 export class AssetsStorageQueryService {
@@ -10,11 +12,11 @@ export class AssetsStorageQueryService {
     @Inject('ASSETS_HANDLER_SERVICE') private readonly client: ClientProxy
   ) {}
 
-  async getFileByUserId(category: string, userId: string): Promise<AWS.S3.GetObjectOutput> {
-    this.logger.log(`Getting file by userId: ${userId} in category: ${category}`);
+  async getFileByUserId(input: GetFileByUserIdDto): Promise<AWS.S3.GetObjectOutput> {
+    this.logger.log(`Getting file by userId: ${input.userId} in category: ${input.category}`);
 
     try {
-      const fileData = await this.client.send({ cmd: 'get-file-by-user-id' }, { category, userId }).toPromise();
+      const fileData = await this.client.send({ cmd: 'get-file-by-user-id' }, input).toPromise();
       return fileData;
     } catch (error: any) {
       this.logger.error(`Failed to get file by userId: ${error.message}`);
@@ -22,11 +24,11 @@ export class AssetsStorageQueryService {
     }
   }
 
-  async getFileByUserIdAndFileName(category: string, userId: string, fileName: string): Promise<AWS.S3.GetObjectOutput> {
-    this.logger.log(`Getting file by userId: ${userId}, fileName: ${fileName} in category: ${category}`);
+  async getFileByUserIdAndFileName(input: GetFileByUserIdAndFileNameDto): Promise<AWS.S3.GetObjectOutput> {
+    this.logger.log(`Getting file by userId: ${input.userId}, fileName: ${input.filename} in category: ${input.category}`);
 
     try {
-      const fileData = await this.client.send({ cmd: 'get-file-by-user-id-and-file-name' }, { category, userId, fileName }).toPromise();
+      const fileData = await this.client.send({ cmd: 'get-file-by-user-id-and-file-name' }, input).toPromise();
       return fileData;
     } catch (error: any) {
       this.logger.error(`Failed to get file by userId and fileName: ${error.message}`);

@@ -3,6 +3,8 @@ import { Logger } from "@nestjs/common";
 import { AssetsStorageQuery } from "../../../utils/graphql/types/graphql";
 import { FileOutput } from "../../../utils/graphql/types/graphql";
 import { AssetsStorageQueryService } from "../service/assets-storage.query.service";
+import { GetFileByUserIdDto } from "../dto/assets-get-by-id.dto"
+import { GetFileByUserIdAndFileNameDto } from "../dto/assets-get-by-filename.dto"
 
 @Resolver(() => AssetsStorageQuery)
 export class AssetsStorageQueryResolver {
@@ -17,11 +19,10 @@ export class AssetsStorageQueryResolver {
 
     @ResolveField('getFileByUserId')
     async getFileByUserId(
-        @Args('category') category: string, 
-        @Args('userId') userId: string
+        @Args('input') input: GetFileByUserIdDto
     ): Promise<FileOutput> {
         this.logger.log("[getFileByUserId] Get asset request received");
-        const fileData = await this.assetsStorageQueryService.getFileByUserId(category, userId);
+        const fileData = await this.assetsStorageQueryService.getFileByUserId(input);
         return {
             Body: fileData.Body?.toString() || '',
         }
@@ -29,12 +30,10 @@ export class AssetsStorageQueryResolver {
 
     @ResolveField('getFileByUserIdAndFileName')
     async getFileByUserIdAndFileName(
-        @Args('category') category: string,
-        @Args('userId') userId: string,
-        @Args('fileName') fileName: string
+        @Args('input') input: GetFileByUserIdAndFileNameDto
     ): Promise<FileOutput> {
         this.logger.log("[getFileByUserIdAndFileName] Get assets request received");
-        const fileData = await this.assetsStorageQueryService.getFileByUserIdAndFileName(category, userId, fileName);
+        const fileData = await this.assetsStorageQueryService.getFileByUserIdAndFileName(input);
         return {
             Body: fileData.Body?.toString() || '',
         }
