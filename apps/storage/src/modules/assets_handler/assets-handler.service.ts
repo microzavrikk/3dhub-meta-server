@@ -3,6 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import { AssetsHandlerRepository } from './assets-handler.repository';
 import { AssetsHandlerS3Repository } from './assets-handler.s3.repository';
 import { CreateAssetDto, UpdateAssetDto, Asset } from './types';
+import * as AWS from 'aws-sdk';
+
 
 @Injectable()
 export class AssetsHandlerService {
@@ -53,15 +55,11 @@ export class AssetsHandlerService {
     await this.assetsHandlerRepository.deleteAsset(id);
   }
 
-  async getAssetById(id: string): Promise<Asset | null> {
-    return this.assetsHandlerRepository.getAssetById(id);
+  async getFileByUserId(category: string, userId: string): Promise<AWS.S3.GetObjectOutput> {
+    return this.assetsHandlerS3Repository.getFileByUserId(category, userId);
   }
 
-  async getAssetsByUser(userId: string): Promise<Asset[]> {
-    return this.assetsHandlerRepository.getAssetsByUser(userId);
-  }
-
-  async getAssetsByCategory(category: string): Promise<Asset[]> {
-    return this.assetsHandlerRepository.getAssetsByCategory(category);
+  async getFileByUserIdAndFileName(category: string, userId: string, filename: string): Promise<AWS.S3.GetObjectOutput> {
+    return this.assetsHandlerS3Repository.getFileByUserIdAndFileName(category, userId, filename);
   }
 }

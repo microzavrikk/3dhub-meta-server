@@ -1,0 +1,7 @@
+type Query {
+    Category: CategoryQuery
+}
+
+type CategoryQuery {
+    getCategories: [String!]!
+}

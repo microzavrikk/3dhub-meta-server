@@ -35,44 +35,23 @@ export class AssetsHandlerController {
         }
     }
 
-    @MessagePattern({ cmd: 'delete-asset' })
-    async deleteAsset(assetId: string): Promise<boolean> {
+    @MessagePattern({ cmd: 'get-file-by-user-id' })
+    async getFileByUserId(category: string, userId: string): Promise<AWS.S3.GetObjectOutput> {
         try {
-            await this.assetsHandlerService.deleteAsset(assetId);
-            return true;
+            return await this.assetsHandlerService.getFileByUserId(category, userId);
         } catch (error: any) {
-            this.logger.error(`Failed to delete asset: ${error.message}`);
-            return false;
+            this.logger.error(`Failed to get asset: ${error.message}`);
         }
+        return { }
     }
 
-    @MessagePattern({ cmd: 'get-asset-by-id' })
-    async getAssetById(assetId: string): Promise<Asset | null> {
+    @MessagePattern({ cmd: 'get-file-by-user-id-and-file-name' })
+    async getFileByUserIdAndFileName(category: string, userId: string, filename: string): Promise<AWS.S3.GetObjectOutput> {
         try {
-            return await this.assetsHandlerService.getAssetById(assetId);
+            return await this.assetsHandlerService.getFileByUserIdAndFileName(category, userId, filename);
         } catch (error: any) {
-            this.logger.error(`Failed to get asset by ID: ${error.message}`);
-            return null;
-        }
-    }
-
-    @MessagePattern({ cmd: 'get-assets-by-user' })
-    async getAssetsByUser(userId: string): Promise<Asset[]> {
-        try {
-            return await this.assetsHandlerService.getAssetsByUser(userId);
-        } catch (error: any) {
-            this.logger.error(`Failed to get assets by user: ${error.message}`);
-            return [];
-        }
-    }
-
-    @MessagePattern({ cmd: 'get-assets-by-category' })
-    async getAssetsByCategory(category: AssetCategory): Promise<Asset[]> {
-        try {
-            return await this.assetsHandlerService.getAssetsByCategory(category.category);
-        } catch (error: any) {
-            this.logger.error(`Failed to get assets by category: ${error.message}`);
-            return [];
+            this.logger.error(`Failed to get asset: ${error.message}`);
+            return { }
         }
     }
 }

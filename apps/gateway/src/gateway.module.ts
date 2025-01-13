@@ -6,6 +6,7 @@ import { SessionModule } from './modules/session/session.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AssetsStorageModule } from './modules/assets-storage/assets-storage.module';
+import { CategoryModule } from './modules/category/category.module';
 
 @Module({
   imports: [
@@ -21,7 +22,8 @@ import { AssetsStorageModule } from './modules/assets-storage/assets-storage.mod
     GraphqlModule,
     SessionModule,
     AuthModule,
-    AssetsStorageModule
+    AssetsStorageModule,
+    CategoryModule
   ],
   controllers: [GatewayController],
   providers: [GatewayService],

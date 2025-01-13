@@ -70,6 +70,8 @@ export abstract class IQuery {
     abstract getPosts(): Post[] | Promise<Post[]>;
 
     abstract AssetsQuery(): Nullable<AssetsStorageQuery> | Promise<Nullable<AssetsStorageQuery>>;
+
+    abstract Category(): Nullable<CategoryQuery> | Promise<Nullable<CategoryQuery>>;
 }
 
 export abstract class IMutation {
@@ -114,10 +116,6 @@ export class Asset {
 
 export class FileOutput {
     Body: string;
-    ContentType: string;
-    ContentLength: number;
-    ETag: string;
-    LastModified: string;
 }
 
 export class AuthMutation {
@@ -132,6 +130,10 @@ export class TokenResponse {
 export class AuthPayload {
     token: string;
     user: User;
+}
+
+export class CategoryQuery {
+    getCategories: string[];
 }
 
 export type JSON = any;

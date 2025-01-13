@@ -31,8 +31,4 @@ type Asset {
 
 type FileOutput {
   Body: String!
-  ContentType: String!
-  ContentLength: Int!
-  ETag: String!
-  LastModified: String!
 }
