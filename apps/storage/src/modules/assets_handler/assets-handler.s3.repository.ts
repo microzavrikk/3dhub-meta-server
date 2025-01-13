@@ -52,12 +52,12 @@ export class AssetsHandlerS3Repository {
     }
   }
 
-  async getFileByUserId(userId: string): Promise<AWS.S3.GetObjectOutput> {
+  async getFileByUserId(category: string, userId: string): Promise<AWS.S3.GetObjectOutput> {
     const params = {
       Bucket: this.bucketName,
-      Prefix: `${userId}/`,
+      Prefix: `${category}/${userId}/`,
     };
-
+  
     try {
       const data = await this.s3.listObjectsV2(params).promise();
       if (data.Contents && data.Contents.length > 0) {
@@ -77,13 +77,13 @@ export class AssetsHandlerS3Repository {
     }
   }
 
-  async getFileByUserIdAndFileName(userId: string, fileName: string): Promise<AWS.S3.GetObjectOutput> {
-    const fileKey = `${userId}/${fileName}`;
+  async getFileByUserIdAndFileName(category: string, userId: string, fileName: string): Promise<AWS.S3.GetObjectOutput> {
+    const fileKey = `${category}/${userId}/${fileName}`;
     const params = {
       Bucket: this.bucketName,
       Key: fileKey,
     };
-
+  
     try {
       const data = await this.s3.getObject(params).promise();
       this.logger.log(`File retrieved successfully: ${fileKey}`);

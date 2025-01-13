@@ -1,3 +1,4 @@
+scalar Upload
 scalar JSON
 
 type Query {
@@ -5,15 +6,16 @@ type Query {
 }
 
 type AssetsStorageQuery {
-  getAssetById(assetId: String!): Asset
-  getAssetsByUser(userId: String!): [Asset!]!
-  getAssetsByCategory(category: String!): [Asset!]!
+  getFileByUserId(category: String!, userId: String!): FileOutput!
+  getFileByUserIdAndFileName(category: String!, userId: String!, fileName: String!): FileOutput!
 }
 
 type Asset {
+  file: Upload!
   id: String!
   name: String!
   description: String
+  category: String!
   fileKey: String!
   bucketName: String!
   fileSize: Int!
@@ -25,4 +27,12 @@ type Asset {
   publicAccess: Boolean!
   thumbnailUrl: String
   metadata: JSON
+}
+
+type FileOutput {
+  Body: String!
+  ContentType: String!
+  ContentLength: Int!
+  ETag: String!
+  LastModified: String!
 }

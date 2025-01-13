@@ -89,15 +89,16 @@ export class AssetsStorageMutation {
 }
 
 export class AssetsStorageQuery {
-    getAssetById?: Nullable<Asset>;
-    getAssetsByUser?: Asset[];
-    getAssetsByCategory?: Asset[];
+    getFileByUserId?: FileOutput;
+    getFileByUserIdAndFileName?: FileOutput;
 }
 
 export class Asset {
+    file: Upload;
     id: string;
     name: string;
     description?: Nullable<string>;
+    category: string;
     fileKey: string;
     bucketName: string;
     fileSize: number;
@@ -109,6 +110,14 @@ export class Asset {
     publicAccess: boolean;
     thumbnailUrl?: Nullable<string>;
     metadata?: Nullable<JSON>;
+}
+
+export class FileOutput {
+    Body: string;
+    ContentType: string;
+    ContentLength: number;
+    ETag: string;
+    LastModified: string;
 }
 
 export class AuthMutation {
