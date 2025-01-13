@@ -3,13 +3,12 @@ import { NestFactory } from '@nestjs/core';
 import { NestFastifyApplication, FastifyAdapter } from '@nestjs/platform-fastify';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';
 import { GatewayModule } from './gateway.module';
-
 async function bootstrap() {
   const app = await NestFactory.create<NestFastifyApplication>(GatewayModule, new FastifyAdapter());
   const logger = new BaseLogger('Gateway');
 
   app.connectMicroservice<MicroserviceOptions>({
-    transport: Transport.NATS,
+    transport: Transport.NATS, 
     options: {
       servers: ['nats://localhost:4222'], 
     },

@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { AssetsStorageMutationResolver } from "./resolvers/assets-storage.mutation.resolver";
+import { AssetsStorageController } from "./assets-storage.controller.resolver";
 import { AssetsStorageQueryResolver } from "./resolvers/assets-storage.query.resolver";
 import { AssetsStorageService } from "./service/assets-storage.mutation.service";
 import { AssetsStorageQueryService } from "./service/assets-storage.query.service";
@@ -17,8 +17,8 @@ import { AssetsStorageQueryService } from "./service/assets-storage.query.servic
       },
     ]),
   ],
+  controllers: [AssetsStorageController],
   providers: [
-    AssetsStorageMutationResolver,
     AssetsStorageQueryResolver,
     AssetsStorageService,
     AssetsStorageQueryService,

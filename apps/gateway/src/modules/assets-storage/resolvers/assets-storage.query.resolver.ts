@@ -23,6 +23,7 @@ export class AssetsStorageQueryResolver {
     ): Promise<FileOutput> {
         this.logger.log("[getFileByUserId] Get asset request received");
         const fileData = await this.assetsStorageQueryService.getFileByUserId(input);
+        this.logger.log("[getFileByUserId] File data: ", JSON.stringify(fileData, null, 2));
         return {
             Body: fileData.Body?.toString() || '',
         }

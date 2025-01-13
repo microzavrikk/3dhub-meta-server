@@ -3,7 +3,7 @@
     "@apollo/server": "^4.11.2",
     "@as-integrations/fastify": "^2.1.1",
     "@aws-sdk/client-s3": "^3.726.0",
-    "@nestjs-modules/mailer": "^2.0.2",
+    "@nestjs-modules/mailer": "^1.6.1",
     "@nestjs/apollo": "^12.2.2",
     "@nestjs/common": "^10.4.15",
     "@nestjs/config": "^3.3.0",
@@ -45,7 +45,9 @@
     "@types/uuid": "^10.0.0",
     "i": "^0.3.7",
     "npm": "^11.0.0",
-    "prisma": "^6.1.0"
+    "prisma": "^6.1.0",
+    "webpack": "^5.97.1",
+    "webpack-cli": "^6.0.1"
   },
   "name": "3dhub-meta-server",
   "version": "1.0.0",

@@ -23,7 +23,7 @@ import { CategoryModule } from './modules/category/category.module';
     SessionModule,
     AuthModule,
     AssetsStorageModule,
-    CategoryModule
+    CategoryModule,
   ],
   controllers: [GatewayController],
   providers: [GatewayService],

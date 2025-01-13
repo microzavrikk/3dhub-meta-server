@@ -24,7 +24,7 @@ import { MailModule } from '../mail/mail.module';
       }),
     }),
     UsersApiModule,
-    MailModule, // Import MailModule
+    MailModule,
   ],
   controllers: [],
   providers: [
@@ -33,6 +33,6 @@ import { MailModule } from '../mail/mail.module';
     AuthService,
     JwtStrategy,
   ],
-  exports: [AuthService], // Export only AuthService
+  exports: [AuthService], 
 })
 export class AuthModule {}
