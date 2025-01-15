@@ -13,18 +13,22 @@ export class AssetsHandlerRepository {
     try {
       const asset = await this.prisma.thirdModel.create({
         data: {
-          name: data.name,
-          description: data.description,
-          category: data.category,
-          fileKey: data.fileKey,
-          bucketName: data.bucketName,
-          fileSize: data.fileSize,
-          fileType: data.fileType,
-          tags: data.tags,
-          ownerId: data.ownerId,
-          publicAccess: data.publicAccess ?? false,
-          thumbnailUrl: data.thumbnailUrl,
-          metadata: data.metadata,
+          name: data.newAsset.name,
+          description: data.newAsset.description,
+          category: data.newAsset.category,
+          fileKey: data.newAsset.fileKey,
+          bucketName: data.newAsset.bucketName,
+          fileSize: isNaN(parseInt(data.newAsset.fileSize)) ? 0 : parseInt(data.newAsset.fileSize),
+          fileType: data.newAsset.fileType,
+          tags: Array.isArray(data.newAsset.tags) 
+            ? data.newAsset.tags 
+            : [data.newAsset.tags].filter(Boolean),
+          ownerId: data.newAsset.ownerId,
+          publicAccess: data.newAsset.publicAccess === 'true' 
+            || data.newAsset.publicAccess === true 
+            || false,
+          thumbnailUrl: data.newAsset.thumbnailUrl,
+          metadata: data.newAsset.metadata,
         },
       });
       this.logger.log(`Asset created successfully: ${asset.id}`);

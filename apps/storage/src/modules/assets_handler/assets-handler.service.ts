@@ -19,31 +19,42 @@ export class AssetsHandlerService {
     @Inject('ASSETS_HANDLER_SERVICE') private readonly client: ClientProxy
   ) {}
 
-  async createAsset(data: CreateAssetDto): Promise<Asset> {
-    this.logger.log(`Creating asset: ${JSON.stringify(data)}`);
-
-    const fileKey = `${data.category}/${data.ownerId}/${data.name}`;
-    await this.assetsHandlerS3Repository.uploadFile(data.file, fileKey);
-
-    const assetData = { ...data, fileKey };
-    const asset = await this.assetsHandlerRepository.createAsset(assetData);
-
-    return asset;
-  }
-
-  async updateAsset(id: string, data: UpdateAssetDto): Promise<Asset> {
-    this.logger.log(`Updating asset: ${JSON.stringify(data)}`);
-
-    if (data.file) {
-      const fileKey = `${data.ownerId}/${data.name}`;
-      await this.assetsHandlerS3Repository.uploadFile(data.file, fileKey);
-      data.fileKey = fileKey;
+  async createAsset(data: CreateAssetDto, file: Express.Multer.File): Promise<Asset> {    
+    // Проверяем, что все ключевые свойства присутствуют
+    this.logger.log(`Creating asset: ${data.newAsset.name}, ${data.newAsset.category}, ${data.newAsset.ownerId}`);
+    if (!data.newAsset.category || !data.newAsset.ownerId || !data.newAsset.name) {
+        throw new Error(`Missing required fields for fileKey generation. Received data:`);
     }
 
-    const asset = await this.assetsHandlerRepository.updateAsset(id, data);
+    // Генерация ключа файла
+    const fileKey = `${data.newAsset.category}/${data.newAsset.ownerId}/${data.newAsset.name}`;
+    this.logger.log(`Generated fileKey: ${fileKey}`);
 
+    // Загрузка файла в хранилище
+    await this.assetsHandlerS3Repository.uploadFile(data, fileKey, file);
+
+    // Добавление ключа файла к данным
+    const assetData = { ...data, fileKey };
+
+    // Сохранение данных в репозитории
+    const asset = await this.assetsHandlerRepository.createAsset(assetData);
     return asset;
-  }
+}
+
+
+  //async updateAsset(id: string, data: UpdateAssetDto): Promise<Asset> {
+  //  this.logger.log(`Updating asset: ${JSON.stringify(data)}`);
+//
+  //  if (data.file) {
+   //   const fileKey = `${data.ownerId}/${data.name}`;
+    //  await this.assetsHandlerS3Repository.uploadFile(data);
+   //   data.fileKey = fileKey;
+   // }
+
+   // const asset = await this.assetsHandlerRepository.updateAsset(id, data);
+
+  //  return asset;
+  //}
 
   async deleteAsset(id: string): Promise<void> {
     this.logger.log(`Deleting asset: ${id}`);

@@ -1,12 +1,14 @@
 import { Module } from "@nestjs/common";
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { AssetsStorageController } from "./assets-storage.controller.resolver";
+import { AssetsStorageController } from "./assets-storage.controller";
 import { AssetsStorageQueryResolver } from "./resolvers/assets-storage.query.resolver";
 import { AssetsStorageService } from "./service/assets-storage.mutation.service";
 import { AssetsStorageQueryService } from "./service/assets-storage.query.service";
+import { MulterModule } from "@nestjs/platform-express";
 
 @Module({
   imports: [
+    MulterModule.register({ dest: './uploads' }),
     ClientsModule.register([
       {
         name: 'ASSETS_HANDLER_SERVICE',

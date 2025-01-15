@@ -10,8 +10,7 @@ export class AssetsStorageService {
     @Inject('ASSETS_HANDLER_SERVICE') private readonly client: ClientProxy
   ) {}
 
-  async createAsset(data: CreateAssetInput): Promise<boolean> {
-    this.logger.log(`Creating asset: ${JSON.stringify(data)}`);
+  async createAsset(data: CreateAssetInput, file: Express.Multer.File): Promise<boolean> {
     const newAsset: Asset = {
       id: this.generateId(),
       ...data,
@@ -19,15 +18,40 @@ export class AssetsStorageService {
       updatedAt: new Date().toISOString(),
       publicAccess: data.publicAccess ?? false,
     };
+  
+    // Создаем объект с только нужными данными файла
+    const fileData = {
+      originalname: file.originalname,
+      filename: file.filename,
+      mimetype: file.mimetype,
+      size: file.size,
+      path: file.path,
+      buffer: file.buffer ? file.buffer.toString('base64') : undefined
+    };
 
+    this.logger.log('File info:', fileData);
+    
+
+    this.logger.log('File data:', {
+      originalname: file.originalname,
+      filename: file.filename,
+      mimetype: file.mimetype,
+      size: file.size,
+      path: file.path,
+      hasBuffer: !!file.buffer
+    });
+  
     try {
-      await this.client.send({ cmd: 'upload-asset' }, newAsset).toPromise();
+      await this.client.send({ cmd: 'upload-asset' }, { 
+        newAsset, 
+        file: fileData 
+      }).toPromise();
       return true;
     } catch (error: any) {
       this.logger.error(`Failed to create asset: ${error.message}`);
       return false;
     }
-  }
+}
 
   async updateAsset(data: UpdateAssetInput): Promise<boolean> {
     this.logger.log(`Updating asset: ${JSON.stringify(data)}`);

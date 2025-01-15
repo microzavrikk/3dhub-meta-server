@@ -6,7 +6,6 @@ import { AssetsHandlerService } from "./assets-handler.service";
 import { GetFileByUserIdDto } from '../../../../gateway/src/modules/assets-storage/dto/assets-get-by-id.dto';
 import { GetFileByUserIdAndFileNameDto } from '../../../../gateway/src/modules/assets-storage/dto/assets-get-by-filename.dto';
 
-
 @Controller()
 export class AssetsHandlerController {
     private readonly logger = new Logger(AssetsHandlerController.name);
@@ -16,24 +15,29 @@ export class AssetsHandlerController {
     ) {}
 
     @MessagePattern({ cmd: 'upload-asset' })
-    async uploadAsset(data: CreateAssetDto): Promise<boolean> {
-        this.logger.log(`Uploading asset: ${JSON.stringify(data)}`);
+    async uploadAsset(data: CreateAssetDto, file: Express.Multer.File): Promise<boolean> {
+        if (!data.file) {
+            this.logger.error('File is required');
+            return false;
+        }
+        else {
+            this.logger.log('File is present', JSON.stringify(data.file.originalname));
+        }
+
+        this.logger.log('Uploaded file info: ' + JSON.stringify({
+            originalname: data.file.originalname,
+            filename: data.file.filename,
+            mimetype: data.file.mimetype,
+            size: data.file.size,
+            path: data.file.path,
+            destination: data.file.destination
+        }, null, 2));
+
         try {
-            await this.assetsHandlerService.createAsset(data);
+            await this.assetsHandlerService.createAsset(data, file);
             return true;
         } catch (error: any) {
             this.logger.error(`Failed to upload asset: ${error.message}`);
-            return false;
-        }
-    }
-
-    @MessagePattern({ cmd: 'update-asset' })
-    async updateAsset(data: UpdateAssetDto): Promise<boolean> {
-        try {
-            await this.assetsHandlerService.updateAsset(data.id, data);
-            return true;
-        } catch (error: any) {
-            this.logger.error(`Failed to update asset: ${error.message}`);
             return false;
         }
     }

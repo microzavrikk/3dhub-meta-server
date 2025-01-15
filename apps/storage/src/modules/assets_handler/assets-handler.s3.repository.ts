@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as AWS from 'aws-sdk';
 import { ConfigService } from '@nestjs/config';
+import { CreateAssetDto } from 'apps/gateway/src/modules/assets-storage/dto/create-asset-input.dto';
 
 @Injectable()
 export class AssetsHandlerS3Repository {
@@ -17,14 +18,14 @@ export class AssetsHandlerS3Repository {
     this.bucketName = this.configService.get<string>('AWS_BUCKET_NAME') || 'default-bucket-name';
   }
 
-  async uploadFile(file: Express.Multer.File, fileKey: string): Promise<AWS.S3.ManagedUpload.SendData> {
-    this.logger.log(`Uploading file: ${fileKey}, ${file.mimetype}, ${file.buffer ? 'Buffer exists' : 'Buffer is missing'}`);
-    this.logger.log(`File size: ${file}`);
+  async uploadFile(data: CreateAssetDto, fileKey?: string, file?: Express.Multer.File): Promise<AWS.S3.ManagedUpload.SendData> {
+    
+    this.logger.log(`Uploading file: ${fileKey}, ${data.file.buffer.length} bytes`);
     const params = {
       Bucket: this.bucketName,
       Key: fileKey,
-      Body: file,
-      ContentType: file.mimetype,
+      Body: data.file.buffer,
+      ContentType: data.file.mimetype,
     };
 
     try {
