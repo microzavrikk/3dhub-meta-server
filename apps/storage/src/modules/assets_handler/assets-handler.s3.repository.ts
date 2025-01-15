@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as AWS from 'aws-sdk';
 import { ConfigService } from '@nestjs/config';
-import { CreateAssetDto } from 'apps/gateway/src/modules/assets-storage/dto/create-asset-input.dto';
+import { CreateAssetDto } from './types';
 
 @Injectable()
 export class AssetsHandlerS3Repository {
@@ -19,6 +19,9 @@ export class AssetsHandlerS3Repository {
   }
 
   async uploadFile(data: CreateAssetDto, fileKey?: string, file?: Express.Multer.File): Promise<AWS.S3.ManagedUpload.SendData> {
+    if (!fileKey) {
+      throw new Error('FileKey is required');
+    }
     
     this.logger.log(`Uploading file: ${fileKey}, ${data.file.buffer.length} bytes`);
     const params = {

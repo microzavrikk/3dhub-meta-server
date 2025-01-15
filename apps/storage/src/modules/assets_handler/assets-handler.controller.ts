@@ -1,7 +1,7 @@
 import { MessagePattern, ClientProxy } from "@nestjs/microservices";
 import { Controller, Inject } from "@nestjs/common";
 import { Logger } from "@nestjs/common";
-import { CreateAssetDto, UpdateAssetDto, Asset, AssetCategory } from './types';
+import { CreateAssetDto } from "./types";
 import { AssetsHandlerService } from "./assets-handler.service";
 import { GetFileByUserIdDto } from '../../../../gateway/src/modules/assets-storage/dto/assets-get-by-id.dto';
 import { GetFileByUserIdAndFileNameDto } from '../../../../gateway/src/modules/assets-storage/dto/assets-get-by-filename.dto';
@@ -16,23 +16,6 @@ export class AssetsHandlerController {
 
     @MessagePattern({ cmd: 'upload-asset' })
     async uploadAsset(data: CreateAssetDto, file: Express.Multer.File): Promise<boolean> {
-        if (!data.file) {
-            this.logger.error('File is required');
-            return false;
-        }
-        else {
-            this.logger.log('File is present', JSON.stringify(data.file.originalname));
-        }
-
-        this.logger.log('Uploaded file info: ' + JSON.stringify({
-            originalname: data.file.originalname,
-            filename: data.file.filename,
-            mimetype: data.file.mimetype,
-            size: data.file.size,
-            path: data.file.path,
-            destination: data.file.destination
-        }, null, 2));
-
         try {
             await this.assetsHandlerService.createAsset(data, file);
             return true;

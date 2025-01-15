@@ -20,27 +20,35 @@ export class AssetsHandlerService {
   ) {}
 
   async createAsset(data: CreateAssetDto, file: Express.Multer.File): Promise<Asset> {    
-    // Проверяем, что все ключевые свойства присутствуют
-    this.logger.log(`Creating asset: ${data.newAsset.name}, ${data.newAsset.category}, ${data.newAsset.ownerId}`);
-    if (!data.newAsset.category || !data.newAsset.ownerId || !data.newAsset.name) {
-        throw new Error(`Missing required fields for fileKey generation. Received data:`);
+    try {
+      if (!data.file) {
+        throw new Error('File is required');
+      }
+      if (!data.newAsset.category || !data.newAsset.ownerId || !data.newAsset.name) {
+        throw new Error('Missing required fields for fileKey generation');
+      }
+      const fileKey = `${data.newAsset.category}/${data.newAsset.ownerId}/${data.newAsset.name}`;
+      this.logger.log(`Generated fileKey: ${fileKey}`);
+
+      // Загрузка файла в хранилище
+      await this.assetsHandlerS3Repository.uploadFile(data, fileKey, file);
+
+      // Добавление ключа файла к данным
+      const assetData = { 
+        ...data,
+        newAsset: {
+          ...data.newAsset,
+          fileKey
+        }
+      };
+
+      // Сохранение данных в репозитории
+      return this.assetsHandlerRepository.createAsset(assetData);
+    } catch (error: any) {
+      this.logger.error(`Failed to create asset: ${error.message}`);
+      throw error;
     }
-
-    // Генерация ключа файла
-    const fileKey = `${data.newAsset.category}/${data.newAsset.ownerId}/${data.newAsset.name}`;
-    this.logger.log(`Generated fileKey: ${fileKey}`);
-
-    // Загрузка файла в хранилище
-    await this.assetsHandlerS3Repository.uploadFile(data, fileKey, file);
-
-    // Добавление ключа файла к данным
-    const assetData = { ...data, fileKey };
-
-    // Сохранение данных в репозитории
-    const asset = await this.assetsHandlerRepository.createAsset(assetData);
-    return asset;
-}
-
+  }
 
   //async updateAsset(id: string, data: UpdateAssetDto): Promise<Asset> {
   //  this.logger.log(`Updating asset: ${JSON.stringify(data)}`);

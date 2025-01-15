@@ -31,17 +31,15 @@ export class AssetsStorageController {
   }
 
   @Post('create-asset')
-@UseInterceptors(
+  @UseInterceptors(
   FileInterceptor('file', {
     storage: diskStorage({
       destination: (req, file, cb) => {
         const uploadPath = join(process.cwd(), 'uploads');
-        console.log('Saving to:', uploadPath);
         cb(null, uploadPath);
       },
       filename: (req, file, callback) => {
         const uniqueFileName = `${Date.now()}-${crypto.randomBytes(8).toString('hex')}-${file.originalname}`;
-        console.log('Generated filename:', uniqueFileName);
         callback(null, uniqueFileName);
       },
     }),
@@ -61,27 +59,16 @@ async createAsset(
       throw new HttpException('File is required', HttpStatus.BAD_REQUEST);
     }
 
-    this.logger.log('File upload attempt detected');
-    this.logger.log(`Upload path: ${this.uploadPath}`);
+
 
     const fullFilePath = join(this.uploadPath, file.filename);
 
-    // Read the entire file content from disk
     const fileContent = await fs.readFile(fullFilePath);
 
     const fullFileObject = {
       ...file,
       buffer: fileContent,
     };
-
-    this.logger.log('Complete file object for storage:', {
-      originalname: fullFileObject.originalname,
-      filename: fullFileObject.filename,
-      mimetype: fullFileObject.mimetype,
-      size: fullFileObject.size,
-      path: fullFileObject.path,
-      hasBuffer: !!fullFileObject.buffer,
-    });
 
     const createAssetInput = {
       ...createAssetDto,
@@ -96,7 +83,6 @@ async createAsset(
     const result = await this.assetsStorageService.createAsset(createAssetInput, fullFileObject);
 
     if (!result) {
-      // Cleanup: delete the file if asset creation fails
       await fs.unlink(fullFilePath).catch((err) => {
         this.logger.error(`Failed to delete file after failed asset creation: ${err.message}`);
       });

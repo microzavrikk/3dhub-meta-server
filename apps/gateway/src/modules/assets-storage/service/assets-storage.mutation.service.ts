@@ -19,7 +19,6 @@ export class AssetsStorageService {
       publicAccess: data.publicAccess ?? false,
     };
   
-    // Создаем объект с только нужными данными файла
     const fileData = {
       originalname: file.originalname,
       filename: file.filename,
@@ -27,19 +26,7 @@ export class AssetsStorageService {
       size: file.size,
       path: file.path,
       buffer: file.buffer ? file.buffer.toString('base64') : undefined
-    };
-
-    this.logger.log('File info:', fileData);
-    
-
-    this.logger.log('File data:', {
-      originalname: file.originalname,
-      filename: file.filename,
-      mimetype: file.mimetype,
-      size: file.size,
-      path: file.path,
-      hasBuffer: !!file.buffer
-    });
+    };    
   
     try {
       await this.client.send({ cmd: 'upload-asset' }, { 
@@ -54,8 +41,6 @@ export class AssetsStorageService {
 }
 
   async updateAsset(data: UpdateAssetInput): Promise<boolean> {
-    this.logger.log(`Updating asset: ${JSON.stringify(data)}`);
-
     try {
       await this.client.send({ cmd: 'update-asset' }, data).toPromise();
       return true;
