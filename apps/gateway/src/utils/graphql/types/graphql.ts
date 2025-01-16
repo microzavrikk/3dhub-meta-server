@@ -145,6 +145,7 @@ export class AuthPayload {
 
 export class CategoryQuery {
     getCategories: string[];
+    getAllCategoryInS3: string[];
 }
 
 export type JSON = any;

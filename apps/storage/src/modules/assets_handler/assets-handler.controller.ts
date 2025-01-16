@@ -44,4 +44,14 @@ export class AssetsHandlerController {
             return {};
         }
     }
+
+    @MessagePattern({ cmd: 'get-all-category-in-s3' })
+    async getAllCategoryInS3(): Promise<string[]> {
+        try {
+            return await this.assetsHandlerService.getAllCategoryInS3();
+        } catch (error: any) {
+            this.logger.error(`Failed to get all category in s3: ${error.message}`);
+            return [];
+        }
+    }
 }

@@ -20,4 +20,11 @@ export class CategoryQueryResolver {
         const categories = await this.categoryService.getCategories();
         return categories;
     }
+
+    @ResolveField('getAllCategoryInS3')
+    async getAllCategoryInS3(): Promise<string[]> {
+        this.logger.log("[getAllCategoryInS3] Get all category in s3 request received");
+        const categories = await this.categoryService.getAllCategoryInS3();
+        return categories;
+    }
 }

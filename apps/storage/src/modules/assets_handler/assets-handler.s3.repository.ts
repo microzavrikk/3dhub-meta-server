@@ -97,4 +97,20 @@ export class AssetsHandlerS3Repository {
       throw new Error(`Failed to retrieve file: ${error.message}`);
     }
   }
+
+  async getAllCategoryInS3(): Promise<string[]> {
+    const params = {
+      Bucket: this.bucketName,
+      Delimiter: '/'
+    };
+    try {
+      const data = await this.s3.listObjectsV2(params).promise();
+      const categories = data.CommonPrefixes?.map(prefix => prefix.Prefix?.slice(0, -1) || '') || [];
+      this.logger.log(`Retrieved ${categories.length} categories`);
+      return categories;
+    } catch (error: any) {
+      this.logger.error(`Failed to retrieve categories: ${error.message}`);
+      throw new Error(`Failed to retrieve categories: ${error.message}`);
+    }
+  }
 }

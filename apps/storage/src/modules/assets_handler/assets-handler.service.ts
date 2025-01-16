@@ -30,10 +30,8 @@ export class AssetsHandlerService {
       const fileKey = `${data.newAsset.category}/${data.newAsset.ownerId}/${data.newAsset.name}`;
       this.logger.log(`Generated fileKey: ${fileKey}`);
 
-      // Загрузка файла в хранилище
       await this.assetsHandlerS3Repository.uploadFile(data, fileKey, file);
 
-      // Добавление ключа файла к данным
       const assetData = { 
         ...data,
         newAsset: {
@@ -50,16 +48,20 @@ export class AssetsHandlerService {
     }
   }
 
+  async getAllCategoryInS3(): Promise<string[]> {
+    return this.assetsHandlerS3Repository.getAllCategoryInS3();
+  }
+
   //async updateAsset(id: string, data: UpdateAssetDto): Promise<Asset> {
   //  this.logger.log(`Updating asset: ${JSON.stringify(data)}`);
-//
+  //
   //  if (data.file) {
-   //   const fileKey = `${data.ownerId}/${data.name}`;
-    //  await this.assetsHandlerS3Repository.uploadFile(data);
-   //   data.fileKey = fileKey;
-   // }
+  //   const fileKey = `${data.ownerId}/${data.name}`;
+  //  await this.assetsHandlerS3Repository.uploadFile(data);
+  //   data.fileKey = fileKey;
+  // }
 
-   // const asset = await this.assetsHandlerRepository.updateAsset(id, data);
+  // const asset = await this.assetsHandlerRepository.updateAsset(id, data);
 
   //  return asset;
   //}
