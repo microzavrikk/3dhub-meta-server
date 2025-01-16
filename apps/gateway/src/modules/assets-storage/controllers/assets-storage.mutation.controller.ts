@@ -1,4 +1,4 @@
-import { Controller, Post, UseInterceptors, UploadedFile, Body, HttpException, HttpStatus } from '@nestjs/common';
+import { Controller, Post, UseInterceptors, UploadedFile, Body, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AssetsStorageService } from '../service/assets-storage.mutation.service';
 import { Logger } from '@nestjs/common';
@@ -8,8 +8,11 @@ import { promises as fs } from 'fs';
 import { join } from 'path';
 import * as crypto from 'crypto';
 import { diskStorage } from 'multer';
+import { SessionGuard } from '../../session/decorators/session.guard';
+import { AuthGuard } from '../../auth/decorator/auth.guard';
 
 @Controller('assets-storage')
+@UseGuards(AuthGuard)
 export class AssetsStorageMutationController {
   private readonly logger = new Logger(AssetsStorageMutationController.name);
   private readonly uploadPath = join(process.cwd(), 'uploads');
@@ -30,6 +33,7 @@ export class AssetsStorageMutationController {
   }
 
   @Post('create-asset')
+  @UseGuards(SessionGuard)
   @UseInterceptors(
     FileInterceptor('file', {
       storage: diskStorage({
@@ -47,10 +51,9 @@ export class AssetsStorageMutationController {
       },
     }),
   )
-  
   @ApiConsumes('multipart/form-data')
-    @ApiBody({ type: CreateAssetDto })
-    async createAsset(
+  @ApiBody({ type: CreateAssetDto })
+  async createAsset(
     @UploadedFile() file: Express.Multer.File,
     @Body() createAssetDto: CreateAssetDto
   ) {
@@ -107,4 +110,4 @@ export class AssetsStorageMutationController {
       );
     }
   }
-} 
+}
