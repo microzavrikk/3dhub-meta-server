@@ -2,7 +2,7 @@ import { MessagePattern, ClientProxy } from "@nestjs/microservices";
 import { Controller, Inject } from "@nestjs/common";
 import { Logger } from "@nestjs/common";
 import { CreateAssetDto } from "./types";
-import { AssetsHandlerService } from "./assets-handler.service";
+import { AssetsHandlerService } from "./service/assets-handler.service";
 import { GetFileByUserIdDto } from '../../../../gateway/src/modules/assets-storage/dto/assets-get-by-id.dto';
 import { GetFileByUserIdAndFileNameDto } from '../../../../gateway/src/modules/assets-storage/dto/assets-get-by-filename.dto';
 

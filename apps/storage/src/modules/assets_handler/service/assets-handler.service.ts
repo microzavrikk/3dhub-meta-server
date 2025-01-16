@@ -1,12 +1,12 @@
 import { Injectable, Logger, Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ClientProxy } from '@nestjs/microservices';
-import { AssetsHandlerRepository } from './assets-handler.repository';
-import { AssetsHandlerS3Repository } from './assets-handler.s3.repository';
-import { CreateAssetDto, UpdateAssetDto, Asset } from './types';
+import { AssetsHandlerRepository } from '../repository/assets-handler.repository';
+import { AssetsHandlerS3Repository } from '../repository/assets-handler.s3.repository';
+import { CreateAssetDto, UpdateAssetDto, Asset } from '../types';
 import * as AWS from 'aws-sdk';
-import { GetFileByUserIdDto } from '../../../../gateway/src/modules/assets-storage/dto/assets-get-by-id.dto';
-import { GetFileByUserIdAndFileNameDto } from '../../../../gateway/src/modules/assets-storage/dto/assets-get-by-filename.dto';
+import { GetFileByUserIdDto } from '../../../../../gateway/src/modules/assets-storage/dto/assets-get-by-id.dto';
+import { GetFileByUserIdAndFileNameDto } from '../../../../../gateway/src/modules/assets-storage/dto/assets-get-by-filename.dto';
 
 @Injectable()
 export class AssetsHandlerService {

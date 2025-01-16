@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import * as AWS from 'aws-sdk';
 import { ConfigService } from '@nestjs/config';
-import { CreateAssetDto } from './types';
+import { CreateAssetDto } from '../types';
 
 @Injectable()
 export class AssetsHandlerS3Repository {

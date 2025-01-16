@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { AssetsHandlerS3Repository } from './assets-handler.s3.repository';
+import { AssetsHandlerS3Repository } from '../repository/assets-handler.s3.repository';
 
 @Injectable()
 export class AssetsHandlerS3Service {

@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { MulterModule } from '@nestjs/platform-express';
-import { AssetsHandlerService } from './assets-handler.service';
+import { AssetsHandlerService } from './service/assets-handler.service';
 import { AssetsHandlerController } from './assets-handler.controller';
-import { AssetsHandlerRepository } from './assets-handler.repository';
-import { AssetsHandlerS3Repository } from './assets-handler.s3.repository';
+import { AssetsHandlerRepository } from './repository/assets-handler.repository';
+import { AssetsHandlerS3Repository } from './repository/assets-handler.s3.repository';
 import { PrismaModule } from '../../utils/prisma/prisma.module';
 
 @Module({

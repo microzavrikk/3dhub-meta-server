@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { PrismaService } from '../../utils/prisma/prisma.service';
-import { Prisma, ThirdModel } from '../../utils/prisma/types';
-import { CreateAssetDto, UpdateAssetDto } from './types';
+import { PrismaService } from '../../../utils/prisma/prisma.service';
+import { Prisma, ThirdModel } from '../../../utils/prisma/types';
+import { CreateAssetDto, UpdateAssetDto } from '../types';
 
 @Injectable()
 export class AssetsHandlerRepository {
