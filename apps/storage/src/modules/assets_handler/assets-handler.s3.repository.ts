@@ -19,11 +19,17 @@ export class AssetsHandlerS3Repository {
   }
 
   async uploadFile(data: CreateAssetDto, fileKey?: string, file?: Express.Multer.File): Promise<AWS.S3.ManagedUpload.SendData> {
+    this.logger.log(`Uploading file: ${fileKey}, ${data.file.buffer} bytes`);
     if (!fileKey) {
       throw new Error('FileKey is required');
     }
+    const fileExists = await this.checkFileExists(fileKey);
+    if (fileExists) {
+      this.logger.warn(`File with key ${fileKey} already exists in S3`);
+      throw new Error(`File with key ${fileKey} already exists`);
+    }
     
-    this.logger.log(`Uploading file: ${fileKey}, ${data.file.buffer.length} bytes`);
+    this.logger.log(`Uploading file: ${fileKey}, ${data.file.buffer} bytes`);
     const params = {
       Bucket: this.bucketName,
       Key: fileKey,
@@ -53,6 +59,26 @@ export class AssetsHandlerS3Repository {
     } catch (error: any) {
       this.logger.error(`Failed to delete file. ${error.message}`);
       throw new Error(`Failed to delete file. ${error.message}`);
+    }
+  }
+
+  async checkFileExists(fileKey: string): Promise<boolean> {
+    const params = {
+      Bucket: this.bucketName,
+      Key: fileKey
+    };
+
+    try {
+      await this.s3.headObject(params).promise();
+      this.logger.log(`File exists: ${fileKey}`);
+      return true;
+    } catch (error: any) {
+      if (error.code === 'NotFound') {
+        this.logger.log(`File does not exist: ${fileKey}`);
+        return false;
+      }
+      this.logger.error(`Error checking file existence: ${error.message}`);
+      throw new Error(`Failed to check file existence: ${error.message}`);
     }
   }
 
