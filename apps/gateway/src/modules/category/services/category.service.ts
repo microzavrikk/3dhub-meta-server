@@ -26,6 +26,7 @@ export class CategoryService {
     'Science & Technology',
     'Sports & Fitness',
     'Weapons & Military',
+    'images'
   ];
 
   async getAllCategoryInS3(): Promise<string[]> {

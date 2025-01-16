@@ -1,10 +1,11 @@
 import { Module } from "@nestjs/common";
 import { ClientsModule, Transport } from '@nestjs/microservices';
-import { AssetsStorageController } from "./assets-storage.controller";
 import { AssetsStorageQueryResolver } from "./resolvers/assets-storage.query.resolver";
 import { AssetsStorageService } from "./service/assets-storage.mutation.service";
 import { AssetsStorageQueryService } from "./service/assets-storage.query.service";
 import { MulterModule } from "@nestjs/platform-express";
+import { AssetsStorageMutationController } from "./controllers/assets-storage.mutation.controller";
+import { AssetsStorageQueryController } from "./controllers/assets-storage.query.controller";
 
 @Module({
   imports: [
@@ -19,7 +20,7 @@ import { MulterModule } from "@nestjs/platform-express";
       },
     ]),
   ],
-  controllers: [AssetsStorageController],
+  controllers: [AssetsStorageMutationController, AssetsStorageQueryController],
   providers: [
     AssetsStorageQueryResolver,
     AssetsStorageService,
