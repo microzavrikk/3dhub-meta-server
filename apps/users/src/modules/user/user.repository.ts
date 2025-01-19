@@ -34,4 +34,14 @@ export class UserRepository {
     async findAllUsers(): Promise<User[] | null> {
         return await this.prisma.user.findMany();
     }
+
+    async findUserByEmail(email: string): Promise<User | null> {
+        const where: Prisma.UserWhereUniqueInput = { email };
+        return await this.prisma.user.findFirst({ where });
+    }
+
+    async deleteUserByEmail(email: string): Promise<User | null> {
+        const where: Prisma.UserWhereUniqueInput = { email };
+        return await this.prisma.user.delete({ where });
+    }
 }

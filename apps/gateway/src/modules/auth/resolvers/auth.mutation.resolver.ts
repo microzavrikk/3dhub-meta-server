@@ -28,4 +28,9 @@ export class AuthMutationResolver {
         this.logger.log(JSON.stringify(returnData, null, 2));
         return returnData;
     }
+
+    @ResolveField('deleteAccount')
+    async deleteAccount(@Args('email') email: string): Promise<boolean> {
+        return this.authService.deleteAccount(email);
+    }
 }

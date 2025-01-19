@@ -7,6 +7,9 @@ export class AuthMutation {
 
     @Field(() => TokenResponse)
     login!: TokenResponse;
+
+    @Field(() => Boolean)
+    deleteAccount!: boolean;
 }
 
 @InputType()

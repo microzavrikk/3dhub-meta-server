@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { CreateUserDto } from './models/dto/user-create.dto';
 import { UpdateUserDto } from './models/dto/user-update.dto'
@@ -6,6 +6,8 @@ import { User } from '../../utils/prisma/types';
 
 @Injectable()
 export class UserService {
+    private readonly logger = new Logger(UserService.name);
+
     constructor(private readonly userRepository: UserRepository) {}
 
     async create(createUserDto: CreateUserDto): Promise<User | null> {
@@ -32,5 +34,28 @@ export class UserService {
 
     async remove(id: string): Promise<void> {
         await this.userRepository.deleteUser(id);
+    }
+
+    async findUserByEmail(email: string): Promise<User | null> {
+        this.logger.log(`Finding user by email: ${email}`);
+        const user = await this.userRepository.findUserByEmail(email);
+        if (!user) {
+            this.logger.log(`No user found with email: ${email}`);
+        }
+        return user;
+    }
+
+    async deleteUserByEmail(email: string): Promise<boolean> {
+        try {
+            const user = await this.userRepository.findUserByEmail(email);
+            if (!user) {
+                return false;
+            }
+            await this.userRepository.deleteUserByEmail(email);
+            return true;
+        } catch (error) {
+            this.logger.error(`Failed to delete user with email ${email}:`, error);
+            return false;
+        }
     }
 }

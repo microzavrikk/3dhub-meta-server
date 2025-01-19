@@ -28,6 +28,13 @@ export class AuthService {
             throw new HttpException(AuthError.USER_ALREADY_REGISTERED, HttpStatus.FOUND);
         }
 
+        this.logger.log(`Checking if email is already registered: ${data.email}`);
+        const existingUserWithEmail = await this.client.send({ cmd: 'user-find-by-email' }, data.email).toPromise();
+        
+        if (existingUserWithEmail) {
+            throw new HttpException('Email already registered', HttpStatus.CONFLICT);
+        }
+
         user = await this.client.send({ cmd: 'user-register' }, data).toPromise();
 
         if (!user) {
@@ -77,5 +84,26 @@ export class AuthService {
     private generateJWT(payload: JWTPayload): string {
         return this.jwtService.sign(payload, {privateKey: process.env.JWT_TOKEN,
              expiresIn: process.env.JWT_EXPIRES_IN});  
+    }
+
+    async deleteAccount(email: string): Promise<boolean> {
+        this.logger.log(`Attempting to delete account with email: ${email}`);
+        
+        try {
+            const result = await this.client.send({ cmd: 'user-delete-account' }, email).toPromise();
+            
+            if (result) {
+                this.logger.log(`Successfully deleted account with email: ${email}`);
+                const user = await this.client.send({ cmd: 'user-find-by-email' }, email).toPromise();
+                if (user) {
+                    await this.invalidateSession(user.id);
+                }
+            }
+            
+            return result;
+        } catch (error) {
+            this.logger.error(`Failed to delete account with email ${email}:`, error);
+            throw new HttpException('Failed to delete account', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

@@ -18,7 +18,7 @@ export class UserController {
     ) {}
 
     @MessagePattern({ cmd: 'user-register' })
-    async register(data: UserRegisterDto): Promise<UserRegisterDto> {
+    async register(data: UserRegisterDto): Promise<User | null> {
         return this.userAuthService.register(data);
     }
 
@@ -39,5 +39,19 @@ export class UserController {
     @MessagePattern({ cmd: 'user-find-all' })
     async findAll(): Promise<User[] | null> {
         return this.service.findAll();
+    }
+
+    @MessagePattern({ cmd: 'user-delete-account' })
+    async deleteAccount(email: string): Promise<boolean> {
+        this.logger.log(`Received request to delete user account with email: ${email}`);
+        return this.service.deleteUserByEmail(email);
+    }
+
+    @MessagePattern({ cmd: 'user-find-by-email' })
+    async findUserByEmail(email: string): Promise<User | null> {
+        this.logger.log(`Received request to find user by email: ${email}`);
+        const user = await this.service.findUserByEmail(email);
+        this.logger.log(`Found user: ${JSON.stringify(user, null, 2)}`);
+        return user;
     }
 }

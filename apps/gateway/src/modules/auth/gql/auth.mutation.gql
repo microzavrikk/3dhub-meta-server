@@ -5,6 +5,7 @@ type Mutation {
 type AuthMutation {
   register(data: UserRegisterInput!): TokenResponse!
   login(data: UserLoginInput!): TokenResponse!
+  deleteAccount(email: String!): Boolean!
 }
 
 input UserRegisterInput {
