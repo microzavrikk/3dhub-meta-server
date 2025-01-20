@@ -8,7 +8,7 @@ export class MailService {
   constructor(private mailerService: MailerService) {}
 
   async sendUserConfirmation(user: User, token: string) {
-    const url = `${process.env.HOST_URL}.com/auth/confirm?token=${token}`;
+    const url = `${process.env.HOST_URL}/auth/confirm?token=${token}`;
     const logoUrl = 'https://your-domain.com/path-to-logo.png';
 
     await this.mailerService.sendMail({

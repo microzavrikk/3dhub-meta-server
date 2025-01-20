@@ -16,7 +16,6 @@ async function bootstrap() {
   
   app.enableCors({ credentials: true, origin: true });
   app.useGlobalPipes(new ValidationPipe());
-  app.setGlobalPrefix('api/v1');
   
   await app.startAllMicroservices();
   await app.listen(process.env.port ?? 4001);

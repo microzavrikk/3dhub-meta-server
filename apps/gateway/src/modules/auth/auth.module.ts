@@ -7,6 +7,7 @@ import { AuthService } from './services/auth.service';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { UsersApiModule } from '../../../../users/src/modules/user/user.module';
 import { MailModule } from '../mail/mail.module';
+import { AuthController } from './auth.controller';
 
 @Module({
   imports: [
@@ -26,7 +27,7 @@ import { MailModule } from '../mail/mail.module';
     UsersApiModule,
     MailModule,
   ],
-  controllers: [],
+  controllers: [AuthController],
   providers: [
     AuthGuard,
     AuthMutationResolver,

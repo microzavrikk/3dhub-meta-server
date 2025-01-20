@@ -37,12 +37,21 @@ export class AuthService {
 
         user = await this.client.send({ cmd: 'user-register' }, data).toPromise();
 
+        this.logger.log(JSON.stringify(user, null, 2));
+
         if (!user) {
             throw new HttpException(AuthError.CANNOT_REGISTER, HttpStatus.BAD_REQUEST);
         }
 
-        const payload = { username: user.username, sub: user.id };
-        const accessToken = this.jwtService.sign(payload);
+        const sessionId = await this.sessionService.refreshSession(user.id);
+
+        const payload: JWTPayload = { id: user.id, sessionId: sessionId };
+        const accessToken = this.generateJWT({
+            id: user.id,
+            sessionId
+        });
+
+        this.logger.log(`Generated JWT: ${accessToken}`);
 
         this.mailService.sendUserConfirmation(user, accessToken);
 
@@ -50,7 +59,6 @@ export class AuthService {
     }
 
     async login(data: LoginPayload): Promise<TokenResponse> {
-
         const user = await this.client.send({ cmd: 'user-login' }, data).toPromise();
 
         if(!user) {
@@ -78,10 +86,12 @@ export class AuthService {
         const payload = await this.jwtService.verifyAsync(token, {
             secret: process.env.JWT_SECRET
         });
+        this.logger.log(payload);  
         return payload;
     }
 
     private generateJWT(payload: JWTPayload): string {
+        this.logger.log(payload);
         return this.jwtService.sign(payload, {privateKey: process.env.JWT_TOKEN,
              expiresIn: process.env.JWT_EXPIRES_IN});  
     }
@@ -105,5 +115,33 @@ export class AuthService {
             this.logger.error(`Failed to delete account with email ${email}:`, error);
             throw new HttpException('Failed to delete account', HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    async confirmEmail(userId: string): Promise<boolean> {
+        try {
+            this.logger.log(`Confirming email for user ID: ${userId}`);
+            const result = await this.client.send(
+                { cmd: 'user-confirm-email' },
+                userId
+            ).toPromise();
+            
+            if (result) {
+                this.logger.log(`Email confirmed successfully for user ID: ${userId}`);
+            } else {
+                this.logger.error(`Failed to confirm email for user ID: ${userId}`);
+            }
+            
+            return result;
+        } catch (error: any) {
+            this.logger.error(`Error confirming email: ${error.message}`);
+            throw new HttpException(
+                'Failed to confirm email',
+                HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    async findUserByUsername(username: string): Promise<any> {
+        return await this.client.send({ cmd: 'user-find-by-username' }, username).toPromise();
     }
 }

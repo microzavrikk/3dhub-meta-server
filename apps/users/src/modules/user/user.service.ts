@@ -58,4 +58,9 @@ export class UserService {
             return false;
         }
     }
+
+    async confirmEmail(userId: string): Promise<boolean> {
+        this.logger.log(`Received request to confirm email for user ID: ${userId}`);
+        return await this.userRepository.confirmEmail(userId);
+    }
 }

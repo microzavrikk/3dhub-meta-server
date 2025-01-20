@@ -2,9 +2,12 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../utils/prisma/prisma.service";
 import { User, Prisma } from "../../utils/prisma/types";
 import { UpdateUserDto } from "./models/dto/user-update.dto";
+import { Logger } from "@nestjs/common";
 
 @Injectable()
 export class UserRepository {
+    private readonly logger = new Logger(UserRepository.name);
+
     constructor(private readonly prisma: PrismaService) {}
 
     async findUserByUsername(username: string): Promise<User | null> {
@@ -43,5 +46,18 @@ export class UserRepository {
     async deleteUserByEmail(email: string): Promise<User | null> {
         const where: Prisma.UserWhereUniqueInput = { email };
         return await this.prisma.user.delete({ where });
+    }
+
+    async confirmEmail(userId: string): Promise<boolean> {
+        this.logger.log(`Confirming email for user ID: ${userId}`);
+        try {
+            const where: Prisma.UserWhereUniqueInput = { id: userId };
+            await this.prisma.user.update({ where, data: { isVerified: true } });
+            this.logger.log(`Email confirmed successfully for user ID: ${userId}`);
+            return true;
+        } catch (error) {
+            this.logger.error(`Failed to confirm email for user ID: ${userId}`, error);
+            return false;
+        }
     }
 }

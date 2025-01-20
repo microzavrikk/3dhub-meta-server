@@ -54,4 +54,10 @@ export class UserController {
         this.logger.log(`Found user: ${JSON.stringify(user, null, 2)}`);
         return user;
     }
+
+    @MessagePattern({ cmd: 'user-confirm-email' })
+    async confirmEmail(userId: string): Promise<boolean> {
+        this.logger.log(`Received request to confirm email for user ID: ${userId}`);
+        return this.service.confirmEmail(userId);
+    }
 }
