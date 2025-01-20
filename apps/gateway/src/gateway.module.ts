@@ -7,6 +7,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AssetsStorageModule } from './modules/assets-storage/assets-storage.module';
 import { CategoryModule } from './modules/category/category.module';
+import { PingModule } from './modules/ping/ping.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { CategoryModule } from './modules/category/category.module';
     AuthModule,
     AssetsStorageModule,
     CategoryModule,
+    PingModule,
   ],
   controllers: [GatewayController],
   providers: [GatewayService],

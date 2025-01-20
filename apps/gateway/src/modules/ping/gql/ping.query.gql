@@ -1,0 +1,7 @@
+type Query {
+    Ping: PingQuery
+}
+
+type PingQuery {
+    ping: String!
+} 

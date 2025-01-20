@@ -83,6 +83,8 @@ export abstract class IQuery {
     abstract AssetsQuery(): Nullable<AssetsStorageQuery> | Promise<Nullable<AssetsStorageQuery>>;
 
     abstract Category(): Nullable<CategoryQuery> | Promise<Nullable<CategoryQuery>>;
+
+    abstract Ping(): Nullable<PingQuery> | Promise<Nullable<PingQuery>>;
 }
 
 export abstract class IMutation {
@@ -147,6 +149,10 @@ export class AuthPayload {
 export class CategoryQuery {
     getCategories: string[];
     getAllCategoryInS3: string[];
+}
+
+export class PingQuery {
+    ping: string;
 }
 
 export type JSON = any;
