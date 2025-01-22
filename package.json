@@ -93,7 +93,14 @@
     "prisma:generate:orders": "npx dotenv -e ./apps/orders/.env -- npx prisma generate --schema ./apps/orders/src/utils/prisma/orders.prisma",
     "migrate:dev:create:orders": "npx dotenv -e ./apps/orders/.env -- npx prisma migrate dev --create-only --schema ./apps/orders/src/utils/prisma/orders.prisma",
     "migrate:deploy:orders": "npx dotenv -e ./apps/orders/.env -- npx prisma migrate deploy --preview-feature --schema ./apps/orders/src/utils/prisma/orders.prisma",
-    "migrate:reset:orders": "npx dotenv -e ./apps/orders/.env -- npx prisma migrate reset --preview-feature --schema ./apps/orders/src/utils/prisma/orders.prisma"
+    "migrate:reset:orders": "npx dotenv -e ./apps/orders/.env -- npx prisma migrate reset --preview-feature --schema ./apps/orders/src/utils/prisma/orders.prisma",
+    "----   search-service  ----": "",
+    "start:debug:search-service": "npx dotenv -e ./apps/search-service/.env -- nest start search-service --debug --watch",
+    "build:search-service": "nest build search-service",
+    "prisma:generate:search-service": "npx dotenv -e ./apps/search-service/.env -- npx prisma generate --schema ./apps/search-service/src/utils/prisma/search-service.prisma",
+    "migrate:dev:create:search-service": "npx dotenv -e ./apps/search-service/.env -- npx prisma migrate dev --create-only --schema ./apps/search-service/src/utils/prisma/search-service.prisma",
+    "migrate:deploy:search-service": "npx dotenv -e ./apps/search-service/.env -- npx prisma migrate deploy --preview-feature --schema ./apps/search-service/src/utils/prisma/search-service.prisma",
+    "migrate:reset:search-service": "npx dotenv -e ./apps/search-service/.env -- npx prisma migrate reset --preview-feature --schema ./apps/search-service/src/utils/prisma/search-service.prisma"
   },
   "keywords": [],
   "author": "",
