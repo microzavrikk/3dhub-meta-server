@@ -1,0 +1,36 @@
+type Query {
+    SearchUser: SearchUserQuery
+}
+
+type SearchUserQuery {
+    searchUsers(data: SearchUserInput): [User!]
+    findUserById(data: SearchUserByIdInput!): User
+    findUserByEmail(data: SearchUserByEmailInput!): User
+    findUserByUsername(data: SearchUserByUsernameInput!): User
+    findAllUsers: [User!]
+}
+
+input SearchUserInput {
+    username: String
+    email: String
+    id: ID
+}
+
+input SearchUserByIdInput {
+    id: ID!
+}
+
+input SearchUserByEmailInput {
+    email: String!
+}
+
+input SearchUserByUsernameInput {
+    username: String!
+}
+
+type User {
+    id: ID!
+    username: String!
+    email: String!
+    role: String!
+}

@@ -8,24 +8,17 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { AssetsStorageModule } from './modules/assets-storage/assets-storage.module';
 import { CategoryModule } from './modules/category/category.module';
 import { PingModule } from './modules/ping/ping.module';
+import { SearchUserModule } from './modules/search-user/search-user.module';
 
 @Module({
   imports: [
-    ClientsModule.register([
-      {
-        name: 'USER_SERVICE',
-        transport: Transport.NATS,
-        options: {
-          servers: ['nats://localhost:4222'],
-        }
-      },
-    ]),
     GraphqlModule,
     SessionModule,
     AuthModule,
     AssetsStorageModule,
     CategoryModule,
     PingModule,
+    SearchUserModule,
   ],
   controllers: [GatewayController],
   providers: [GatewayService],

@@ -62,10 +62,30 @@ export class UserLoginInput {
     password: string;
 }
 
+export class SearchUserInput {
+    username?: Nullable<string>;
+    email?: Nullable<string>;
+    id?: Nullable<string>;
+}
+
+export class SearchUserByIdInput {
+    id: string;
+}
+
+export class SearchUserByEmailInput {
+    email: string;
+}
+
+export class SearchUserByUsernameInput {
+    username: string;
+}
+
 export class User {
     id: string;
     name: string;
     email: string;
+    username: string;
+    role: string;
 }
 
 export class Post {
@@ -85,6 +105,8 @@ export abstract class IQuery {
     abstract Category(): Nullable<CategoryQuery> | Promise<Nullable<CategoryQuery>>;
 
     abstract Ping(): Nullable<PingQuery> | Promise<Nullable<PingQuery>>;
+
+    abstract SearchUser(): Nullable<SearchUserQuery> | Promise<Nullable<SearchUserQuery>>;
 }
 
 export abstract class IMutation {
@@ -153,6 +175,14 @@ export class CategoryQuery {
 
 export class PingQuery {
     ping: string;
+}
+
+export class SearchUserQuery {
+    searchUsers?: Nullable<User[]>;
+    findUserById?: Nullable<User>;
+    findUserByEmail?: Nullable<User>;
+    findUserByUsername?: Nullable<User>;
+    findAllUsers?: Nullable<User[]>;
 }
 
 export type JSON = any;
