@@ -27,4 +27,14 @@ export class UserAvatarService {
       throw error;
     }
   }
+
+  async getAvatar(username: string) {
+    try {
+      const result = await this.storageClient.send({ cmd: 'storage.get-avatar' }, username).toPromise();
+      return result;
+    } catch (error: any) {
+      this.logger.error(`Error getting avatar: ${error.message}`);
+      throw error;
+    }
+  }
 }

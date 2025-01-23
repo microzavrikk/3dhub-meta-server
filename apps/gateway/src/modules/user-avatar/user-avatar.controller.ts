@@ -1,4 +1,4 @@
-import { Controller, Post, UploadedFile, UseInterceptors, Body } from '@nestjs/common';
+import { Controller, Post, Get, UploadedFile, UseInterceptors, Body, Param } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import { Logger } from '@nestjs/common';
@@ -26,5 +26,10 @@ export class UserAvatarController {
       username: updateAvatarDto.username,
       file: file
     });
+  }
+
+  @Get('get-avatar/:username')
+  async getAvatar(@Param('username') username: string) {
+    return this.userAvatarService.getAvatar(username);
   }
 }

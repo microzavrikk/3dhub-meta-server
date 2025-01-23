@@ -13,4 +13,9 @@ export class UserAvatarController {
     async uploadAvatar(data: any) {
         return this.userAvatarService.uploadAvatar(data);
     }
+
+    @MessagePattern({ cmd: 'users.get-avatar' })
+    async getAvatar(username: string) {
+        return this.userAvatarService.getAvatar(username);
+    }
 }

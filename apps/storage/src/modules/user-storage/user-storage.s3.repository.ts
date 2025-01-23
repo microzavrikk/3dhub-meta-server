@@ -44,6 +44,41 @@ export class UserStorageS3Repository {
     }
   }
 
+  async getAvatar(username: string): Promise<AWS.S3.GetObjectOutput> {
+    this.logger.log(`Getting avatar for user ${username}`);
+    
+    const listParams = {
+      Bucket: this.bucketName,
+      Prefix: `avatars/${username}/`,
+      MaxKeys: 1
+    };
+
+    try {
+      const listResult = await this.s3.listObjectsV2(listParams).promise();
+      
+      if (!listResult.Contents || listResult.Contents.length === 0) {
+        throw new Error('No avatar found');
+      }
+
+      const latestAvatar = listResult.Contents[0];
+      
+      if (!latestAvatar.Key) {
+        throw new Error('Invalid avatar key');
+      }
+
+      const getParams = {
+        Bucket: this.bucketName,
+        Key: latestAvatar.Key,
+      };
+
+      const data = await this.s3.getObject(getParams).promise();
+      return data;
+    } catch (error: any) {
+      this.logger.error(`Failed to get avatar for user ${username}. ${error.message}`);
+      throw new Error(`Failed to get avatar. ${error.message}`);
+    }
+  }
+
   async deleteAvatar(fileKey: string): Promise<void> {
     this.logger.log(`Deleting avatar: ${fileKey}`);
     

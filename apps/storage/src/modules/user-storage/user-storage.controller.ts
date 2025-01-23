@@ -23,4 +23,9 @@ export class UserStorageController {
             throw error;
         }
     }
+
+    @MessagePattern({ cmd: 'storage.get-avatar' })
+    async getAvatar(username: string) {
+        return this.userStorageService.getAvatar(username);
+    }   
 }

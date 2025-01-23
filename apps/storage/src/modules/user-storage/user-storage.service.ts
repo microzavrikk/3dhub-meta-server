@@ -13,4 +13,8 @@ export class UserStorageService {
   async uploadAvatar(username: string, file: Express.Multer.File) {
     return this.userStorageS3Repository.uploadAvatar(username, file);
   }
+
+  async getAvatar(username: string) {
+    return this.userStorageS3Repository.getAvatar(username);
+  }
 }

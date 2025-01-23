@@ -26,4 +26,14 @@ export class UserAvatarService {
             );
         }
     }
+
+    async getAvatar(username: string) {
+        try {
+            const result = await this.usersClient.send({ cmd: 'users.get-avatar' }, username).toPromise();
+            return result;
+        } catch (error: any) {
+            this.logger.error(`Error getting avatar: ${error.message}`);
+            throw new HttpException('Failed to get avatar', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
