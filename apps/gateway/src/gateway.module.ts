@@ -9,6 +9,7 @@ import { AssetsStorageModule } from './modules/assets-storage/assets-storage.mod
 import { CategoryModule } from './modules/category/category.module';
 import { PingModule } from './modules/ping/ping.module';
 import { SearchUserModule } from './modules/search-user/search-user.module';
+import { UserAvatarModule } from './modules/user-avatar/user-avatar.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { SearchUserModule } from './modules/search-user/search-user.module';
     CategoryModule,
     PingModule,
     SearchUserModule,
+    UserAvatarModule,
   ],
   controllers: [GatewayController],
   providers: [GatewayService],
