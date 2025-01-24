@@ -3,8 +3,8 @@ type Mutation {
 }
 
 type AuthMutation {
-  register(data: UserRegisterInput!): TokenResponse!
-  login(data: UserLoginInput!): TokenResponse!
+  register(data: UserRegisterInput!): AuthPayload!
+  login(data: UserLoginInput!): AuthPayload!
   deleteAccount(email: String!): Boolean!
 }
 
@@ -18,11 +18,18 @@ input UserLoginInput {
   email: String!
   password: String!
 }
+
 type TokenResponse {
   accessToken: String!
 }
 
 type AuthPayload {
-  token: String!
+  accessToken: String!
   user: User!
+}
+
+type User {
+  id: ID!
+  username: String!
+  email: String!
 }

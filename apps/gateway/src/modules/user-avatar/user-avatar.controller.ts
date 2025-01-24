@@ -30,6 +30,9 @@ export class UserAvatarController {
 
   @Get('get-avatar/:username')
   async getAvatar(@Param('username') username: string) {
-    return this.userAvatarService.getAvatar(username);
+    this.logger.log(`Received get avatar request for user ${username}`);
+    const result = await this.userAvatarService.getAvatar(username);
+    this.logger.log(`Get avatar result: ${JSON.stringify(result)}`);
+    return result;
   }
 }

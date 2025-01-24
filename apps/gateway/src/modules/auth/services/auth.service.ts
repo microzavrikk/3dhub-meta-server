@@ -7,6 +7,7 @@ import { ClientProxy } from "@nestjs/microservices";
 import { Inject } from "@nestjs/common";
 import { Logger } from "@nestjs/common";
 import { MailService } from "../../mail/mail.service";
+import { AuthPayload } from "../types/auth.types";
 
 @Injectable()
 export class AuthService {
@@ -19,7 +20,7 @@ export class AuthService {
         @Inject('USER_SERVICE') private readonly client: ClientProxy
     ) {}
 
-    async register(data: RegisterPayload): Promise<TokenResponse> {
+    async register(data: RegisterPayload): Promise<AuthPayload> {
         this.logger.log(`Sending request to find user by username: ${data.username}`);
         let user = await this.client.send({ cmd: 'user-find-by-username' }, data.username).toPromise();
         this.logger.log(`Received response: ${JSON.stringify(user, null, 2)}`);
@@ -55,10 +56,10 @@ export class AuthService {
 
         this.mailService.sendUserConfirmation(user, accessToken);
 
-        return { accessToken };
+        return { accessToken, user };
     }
 
-    async login(data: LoginPayload): Promise<TokenResponse> {
+    async login(data: LoginPayload): Promise<AuthPayload> {
         const user = await this.client.send({ cmd: 'user-login' }, data).toPromise();
 
         if(!user) {
@@ -75,7 +76,7 @@ export class AuthService {
 
         this.logger.log(`Generated JWT: ${accessToken}`);
 
-        return { accessToken } ;
+        return { accessToken, user } ;
     }
 
     invalidateSession(userId: string) {

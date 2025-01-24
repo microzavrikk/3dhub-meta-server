@@ -22,3 +22,12 @@ export type LoginPayload = {
     email: string;
     password: string;
 };
+
+export type AuthPayload = {
+    accessToken: string;
+    user: {
+        id: string;
+        username: string;
+        email: string;
+    };
+};

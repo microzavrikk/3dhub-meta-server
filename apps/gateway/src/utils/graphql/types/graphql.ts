@@ -154,8 +154,8 @@ export class FileOutput {
 }
 
 export class AuthMutation {
-    register?: TokenResponse;
-    login?: TokenResponse;
+    register?: AuthPayload;
+    login?: AuthPayload;
     deleteAccount?: boolean;
 }
 
