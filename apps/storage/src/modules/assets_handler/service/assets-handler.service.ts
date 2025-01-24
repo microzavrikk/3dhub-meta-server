@@ -27,7 +27,7 @@ export class AssetsHandlerService {
       if (!data.newAsset.category || !data.newAsset.ownerId || !data.newAsset.name) {
         throw new Error('Missing required fields for fileKey generation');
       }
-      const fileKey = `${data.newAsset.category}/${data.newAsset.ownerId}/${data.newAsset.name}`;
+      const fileKey = `${data.newAsset.category}/${data.newAsset.ownerId}/${data.newAsset.name}/${data.file.originalname}`;
       this.logger.log(`Generated fileKey: ${fileKey}`);
 
       await this.assetsHandlerS3Repository.uploadFile(data, fileKey, file);

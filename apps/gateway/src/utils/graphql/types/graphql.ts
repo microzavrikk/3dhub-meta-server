@@ -11,6 +11,7 @@
 export class CreateAssetInput {
     file: Upload;
     name: string;
+    titleName: string;
     description?: Nullable<string>;
     category: string;
     fileKey: string;
@@ -28,6 +29,7 @@ export class UpdateAssetInput {
     id: string;
     name?: Nullable<string>;
     description?: Nullable<string>;
+    titleName?: Nullable<string>;
     category: string;
     fileKey?: Nullable<string>;
     bucketName?: Nullable<string>;
@@ -164,7 +166,7 @@ export class TokenResponse {
 }
 
 export class AuthPayload {
-    token: string;
+    accessToken: string;
     user: User;
 }
 

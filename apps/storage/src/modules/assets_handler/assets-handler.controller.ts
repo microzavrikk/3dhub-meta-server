@@ -16,6 +16,7 @@ export class AssetsHandlerController {
 
     @MessagePattern({ cmd: 'upload-asset' })
     async uploadAsset(data: CreateAssetDto, file: Express.Multer.File): Promise<boolean> {
+        
         try {
             await this.assetsHandlerService.createAsset(data, file);
             return true;

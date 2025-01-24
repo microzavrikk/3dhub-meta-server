@@ -1,5 +1,5 @@
-import { Controller, Post, UseInterceptors, UploadedFile, Body, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { Controller, Post, UseInterceptors, UploadedFiles, Body, HttpException, HttpStatus, UseGuards } from '@nestjs/common';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { AssetsStorageService } from '../service/assets-storage.mutation.service';
 import { Logger } from '@nestjs/common';
 import { CreateAssetDto } from '../dto/create-asset-input.dto';
@@ -12,7 +12,7 @@ import { SessionGuard } from '../../session/decorators/session.guard';
 import { AuthGuard } from '../../auth/decorator/auth.guard';
 
 @Controller('assets-storage')
-@UseGuards(AuthGuard)
+//@UseGuards(AuthGuard)
 export class AssetsStorageMutationController {
   private readonly logger = new Logger(AssetsStorageMutationController.name);
   private readonly uploadPath = join(process.cwd(), 'uploads');
@@ -33,9 +33,9 @@ export class AssetsStorageMutationController {
   }
 
   @Post('create-asset')
-  @UseGuards(SessionGuard)
+  //@UseGuards(SessionGuard)
   @UseInterceptors(
-    FileInterceptor('file', {
+    FilesInterceptor('files', 10, {
       storage: diskStorage({
         destination: (req, file, cb) => {
           const uploadPath = join(process.cwd(), 'uploads');
@@ -47,64 +47,85 @@ export class AssetsStorageMutationController {
         },
       }),
       limits: {
-        fileSize: 1024 * 1024 * 10, // 10 MB
+        fileSize: 1024 * 1024 * 10, // 10 MB per file
       },
     }),
   )
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: CreateAssetDto })
   async createAsset(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFiles() files: Express.Multer.File[],
     @Body() createAssetDto: CreateAssetDto
   ) {
     try {
-      if (!file) {
-        throw new HttpException('File is required', HttpStatus.BAD_REQUEST);
+      if (!files || files.length === 0) {
+        throw new HttpException('At least one file is required', HttpStatus.BAD_REQUEST);
       }
 
-      const fullFilePath = join(this.uploadPath, file.filename);
+      const results = await Promise.all(
+        files.map(async (file) => {
+          const fullFilePath = join(this.uploadPath, file.filename);
+          const fileContent = await fs.readFile(fullFilePath);
 
-      const fileContent = await fs.readFile(fullFilePath);
+          const fullFileObject = {
+            ...file,
+            buffer: fileContent,
+          };
 
-      const fullFileObject = {
-        ...file,
-        buffer: fileContent,
-      };
+          const createAssetInput = {
+            ...createAssetDto,
+            fileName: file.filename,
+            originalName: file.originalname,
+            mimeType: file.mimetype,
+            size: file.size,
+            filePath: file.path,
+            publicAccess: createAssetDto.publicAccess || false,
+          };
 
-      const createAssetInput = {
-        ...createAssetDto,
-        fileName: file.filename,
-        originalName: file.originalname,
-        mimeType: file.mimetype,
-        size: file.size,
-        filePath: file.path,
-        publicAccess: createAssetDto.publicAccess || false,
-      };
+          const result = await this.assetsStorageService.createAsset(createAssetInput, fullFileObject);
 
-      const result = await this.assetsStorageService.createAsset(createAssetInput, fullFileObject);
+          if (!result) {
+            await fs.unlink(fullFilePath).catch((err) => {
+              this.logger.error(`Failed to delete file after failed asset creation: ${err.message}`);
+            });
+            return {
+              success: false,
+              fileName: file.originalname,
+              error: 'Failed to create asset in the storage service'
+            };
+          }
 
-      if (!result) {
-        await fs.unlink(fullFilePath).catch((err) => {
-          this.logger.error(`Failed to delete file after failed asset creation: ${err.message}`);
-        });
+          return {
+            success: true,
+            fileName: file.originalname,
+            data: createAssetInput
+          };
+        })
+      );
 
+      const failedUploads = results.filter(result => !result.success);
+      if (failedUploads.length > 0) {
         throw new HttpException(
-          'Failed to create asset in the storage service',
-          HttpStatus.INTERNAL_SERVER_ERROR,
+          {
+            message: 'Some files failed to upload',
+            failedUploads
+          },
+          HttpStatus.PARTIAL_CONTENT
         );
       }
 
       return {
-        message: 'Asset created successfully',
+        message: 'Assets created successfully',
         success: true,
-        data: createAssetInput,
+        data: results
       };
+
     } catch (error: any) {
-      this.logger.error(`Failed to create asset: ${error.message}`);
+      this.logger.error(`Failed to create assets: ${error.message}`);
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: `Failed to create asset: ${error.message}`,
+          error: `Failed to create assets: ${error.message}`,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
