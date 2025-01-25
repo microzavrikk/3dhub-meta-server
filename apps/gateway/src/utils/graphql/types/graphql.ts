@@ -14,32 +14,20 @@ export class CreateAssetInput {
     titleName: string;
     description?: Nullable<string>;
     category: string;
-    fileKey: string;
-    bucketName: string;
-    fileSize: number;
-    fileType: string;
     tags: string[];
     ownerId: string;
     publicAccess?: Nullable<boolean>;
-    thumbnailUrl?: Nullable<string>;
-    metadata?: Nullable<JSON>;
 }
 
 export class UpdateAssetInput {
     id: string;
     name?: Nullable<string>;
-    description?: Nullable<string>;
     titleName?: Nullable<string>;
+    description?: Nullable<string>;
     category: string;
-    fileKey?: Nullable<string>;
-    bucketName?: Nullable<string>;
-    fileSize?: Nullable<number>;
-    fileType?: Nullable<string>;
     tags?: Nullable<string[]>;
     ownerId?: Nullable<string>;
     publicAccess?: Nullable<boolean>;
-    thumbnailUrl?: Nullable<string>;
-    metadata?: Nullable<JSON>;
 }
 
 export class GetFileByUserIdDto {
@@ -133,22 +121,17 @@ export class AssetsStorageQuery {
 }
 
 export class Asset {
-    file: Upload;
     id: string;
+    file: Upload;
+    titleName: string;
     name: string;
     description?: Nullable<string>;
     category: string;
-    fileKey: string;
-    bucketName: string;
-    fileSize: number;
-    fileType: string;
-    uploadDate: string;
-    updatedAt: string;
     tags: string[];
     ownerId: string;
-    publicAccess: boolean;
-    thumbnailUrl?: Nullable<string>;
-    metadata?: Nullable<JSON>;
+    publicAccess?: Nullable<boolean>;
+    createdAt?: Nullable<string>;
+    updatedAt?: Nullable<string>;
 }
 
 export class FileOutput {

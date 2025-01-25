@@ -39,3 +39,4 @@ lerna-debug.log*
 **/.env
 apps/**/src/utils/prisma/types/*
 /uploads
+data.txt

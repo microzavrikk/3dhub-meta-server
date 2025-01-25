@@ -24,10 +24,22 @@ export class AssetsHandlerService {
       if (!data.file) {
         throw new Error('File is required');
       }
-      if (!data.newAsset.category || !data.newAsset.ownerId || !data.newAsset.name) {
+      // Save data to data.txt
+      const fs = require('fs');
+      const path = require('path');
+      
+      try {
+        const dataToSave = JSON.stringify(data, null, 2);
+        const filePath = path.join(process.cwd(), 'data.txt');
+        fs.writeFileSync(filePath, dataToSave);
+        this.logger.log(`Data saved to data.txt`);
+      } catch (err: any) {
+        this.logger.error(`Failed to save data to file: ${err.message}`);
+      }
+      if (!data.newAsset.category || !data.newAsset.username || !data.newAsset.name) {
         throw new Error('Missing required fields for fileKey generation');
       }
-      const fileKey = `${data.newAsset.category}/${data.newAsset.ownerId}/${data.newAsset.name}/${data.file.originalname}`;
+      const fileKey = `${data.newAsset.category}/${data.newAsset.username}/${data.newAsset.name}/${data.file.originalname}`;
       this.logger.log(`Generated fileKey: ${fileKey}`);
 
       await this.assetsHandlerS3Repository.uploadFile(data, fileKey, file);

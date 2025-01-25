@@ -17,30 +17,18 @@ input CreateAssetInput {
   titleName: String!
   description: String
   category: String!
-  fileKey: String!
-  bucketName: String!
-  fileSize: Int!
-  fileType: String!
   tags: [String!]!
   ownerId: String!
   publicAccess: Boolean
-  thumbnailUrl: String
-  metadata: JSON
 }
 
 input UpdateAssetInput {
   id: String!
   name: String
-  description: String
   titleName: String
+  description: String
   category: String!
-  fileKey: String
-  bucketName: String
-  fileSize: Int
-  fileType: String
   tags: [String!]
   ownerId: String
   publicAccess: Boolean
-  thumbnailUrl: String
-  metadata: JSON
 }

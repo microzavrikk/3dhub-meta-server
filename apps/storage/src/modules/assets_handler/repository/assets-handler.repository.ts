@@ -17,13 +17,13 @@ export class AssetsHandlerRepository {
           description: data.newAsset.description,
           category: data.newAsset.category,
           fileKey: data.newAsset.fileKey,
-          bucketName: data.newAsset.bucketName,
+          bucketName: data.newAsset.bucketName || 'default-bucket-name', // Add default bucket name
           fileSize: isNaN(parseInt(String(data.newAsset.fileSize))) ? 0 : parseInt(String(data.newAsset.fileSize)),
-          fileType: data.newAsset.fileType,
+          fileType: data.newAsset.fileType || 'application/octet-stream', // Add default file type
           tags: Array.isArray(data.newAsset.tags) 
             ? data.newAsset.tags.filter((tag): tag is string => !!tag)
             : [data.newAsset.tags].filter((tag): tag is string => !!tag),
-          ownerId: data.newAsset.ownerId,
+          ownerId: data.newAsset.ownerId || 'default-owner', // Add default owner
           publicAccess: data.newAsset.publicAccess === 'true' 
             || data.newAsset.publicAccess === true 
             || false,
@@ -47,13 +47,13 @@ export class AssetsHandlerRepository {
           name: data.newAsset.name,
           description: data.newAsset.description,
           fileKey: data.newAsset.fileKey,
-          bucketName: data.newAsset.bucketName,
+          bucketName: data.newAsset.bucketName || 'default-bucket-name', // Add default bucket name
           fileSize: isNaN(parseInt(String(data.newAsset.fileSize))) ? 0 : parseInt(String(data.newAsset.fileSize)),
-          fileType: data.newAsset.fileType,
+          fileType: data.newAsset.fileType || 'application/octet-stream', // Add default file type
           tags: Array.isArray(data.newAsset.tags) 
             ? data.newAsset.tags.filter((tag): tag is string => !!tag)
             : [data.newAsset.tags].filter((tag): tag is string => !!tag),
-          ownerId: data.newAsset.ownerId,
+          ownerId: data.newAsset.ownerId || 'default-owner', // Add default owner
           publicAccess: data.newAsset.publicAccess === 'true' 
             || data.newAsset.publicAccess === true 
             || false,

@@ -14,7 +14,7 @@ export class AssetsStorageService {
     const newAsset: Asset = {
       id: this.generateId(),
       ...data,
-      uploadDate: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       publicAccess: data.publicAccess ?? false,
     };

@@ -6,6 +6,8 @@ export class CreateAssetDto {
   file: Express.Multer.File;
 
   @ApiProperty()
+  titleName: string;
+  @ApiProperty()
   name: string;
 
   @IsOptional()
@@ -14,18 +16,6 @@ export class CreateAssetDto {
 
   @ApiProperty()
   category: string;
-
-  @ApiProperty()
-  fileKey: string;
-
-  @ApiProperty()
-  bucketName: string;
-
-  @ApiProperty()
-  fileSize: number;
-
-  @ApiProperty()
-  fileType: string;
 
   @ApiProperty({ type: [String] })
   tags: string[];
@@ -36,13 +26,4 @@ export class CreateAssetDto {
   @IsOptional()
   @ApiProperty({ required: false })
   publicAccess?: boolean;
-
-  @IsString()
-  @IsOptional()
-  @ApiProperty({ required: false })
-  thumbnailUrl?: string;
-
-  @IsOptional()
-  @ApiProperty({ required: false })
-  metadata?: any;
 }

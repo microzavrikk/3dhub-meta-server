@@ -19,7 +19,6 @@ export class AssetsHandlerS3Repository {
   }
 
   async uploadFile(data: CreateAssetDto, fileKey?: string, file?: Express.Multer.File): Promise<AWS.S3.ManagedUpload.SendData> {
-    this.logger.log(`Uploading file: ${fileKey}, ${data.file.buffer} bytes`);
     if (!fileKey) {
       throw new Error('FileKey is required');
     }

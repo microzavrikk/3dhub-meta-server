@@ -22,22 +22,17 @@ input GetFileByUserIdAndFileNameDto {
 }
 
 type Asset {
-  file: Upload!
   id: String!
+  file: Upload!
+  titleName: String!
   name: String!
   description: String
   category: String!
-  fileKey: String!
-  bucketName: String!
-  fileSize: Int!
-  fileType: String!
-  uploadDate: String!
-  updatedAt: String!
   tags: [String!]!
   ownerId: String!
-  publicAccess: Boolean!
-  thumbnailUrl: String
-  metadata: JSON
+  publicAccess: Boolean
+  createdAt: String
+  updatedAt: String
 }
 
 type FileOutput {
