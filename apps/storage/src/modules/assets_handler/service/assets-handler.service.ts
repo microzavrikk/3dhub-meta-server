@@ -7,6 +7,7 @@ import { CreateAssetDto, UpdateAssetDto, Asset } from '../types';
 import * as AWS from 'aws-sdk';
 import { GetFileByUserIdDto } from '../../../../../gateway/src/modules/assets-storage/dto/assets-get-by-id.dto';
 import { GetFileByUserIdAndFileNameDto } from '../../../../../gateway/src/modules/assets-storage/dto/assets-get-by-filename.dto';
+import { AssetInfo } from 'apps/gateway/src/modules/assets-storage/assets-storage.types';
 
 @Injectable()
 export class AssetsHandlerService {
@@ -58,6 +59,13 @@ export class AssetsHandlerService {
       this.logger.error(`Failed to create asset: ${error.message}`);
       throw error;
     }
+  }
+
+  async getAssetsByUser(userId: string): Promise<AssetInfo[]> {
+    this.logger.log(`Getting assets by userId: ${userId}`);
+    const assets = await this.assetsHandlerS3Repository.getAssetsByUser(userId);
+    this.logger.log(assets);
+    return assets;
   }
 
   async getAllCategoryInS3(): Promise<string[]> {

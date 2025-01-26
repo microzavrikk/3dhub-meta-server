@@ -21,6 +21,7 @@ export type Asset = {
 export interface CreateAssetDto {
   file: Express.Multer.File;
   newAsset: {
+    username: string;
     name: string;
     description: string;
     category: string;

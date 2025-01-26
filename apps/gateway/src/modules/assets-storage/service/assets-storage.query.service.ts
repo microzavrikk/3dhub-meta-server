@@ -3,6 +3,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import * as AWS from 'aws-sdk';
 import { GetFileByUserIdDto } from "../dto/assets-get-by-id.dto"
 import { GetFileByUserIdAndFileNameDto } from "../dto/assets-get-by-filename.dto"
+import { AssetInfo } from "../assets-storage.types"
 
 @Injectable()
 export class AssetsStorageQueryService {
@@ -21,6 +22,27 @@ export class AssetsStorageQueryService {
     } catch (error: any) {
       this.logger.error(`Failed to get file by userId: ${error.message}`);
       throw new Error(`Failed to get file by userId: ${error.message}`);
+    }
+  }
+
+  async getAssetsByUser(userId: string): Promise<AssetInfo[]> {
+    this.logger.log(`Getting assets by userId: ${userId}`);
+    try {
+      const assets = await this.client.send({ cmd: 'get-assets-by-user' }, userId).toPromise();
+      
+      const assetInfos: AssetInfo[] = assets.map((asset: any) => ({
+        titleName: asset.titleName || '',
+        name: asset.name || '',
+        tags: asset.tags || [],
+        category: asset.category || '',
+        createdAt: asset.createdAt || new Date().toISOString(),
+        downloadUrl: asset.downloadUrl || []
+      }));
+
+      return assetInfos;
+    } catch (error: any) {
+      this.logger.error(`Failed to get assets by userId: ${error.message}`);
+      throw new Error(`Failed to get assets by userId: ${error.message}`);
     }
   }
 

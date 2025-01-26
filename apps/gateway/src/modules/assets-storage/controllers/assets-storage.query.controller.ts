@@ -28,6 +28,24 @@ export class AssetsStorageQueryController {
     }
   }
 
+  @Get('assets/user/:userId')
+  async getAssetsByUser(@Param('userId') userId: string) {
+    this.logger.log(`Getting assets by userId: ${userId}`);
+    try {
+      const assets = await this.assetsStorageQueryService.getAssetsByUser(userId);
+      return assets;
+    } catch (error: any) {
+      this.logger.error(`Failed to get assets for user: ${error.message}`);
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: `Failed to get assets for user: ${error.message}`,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   @Get('files/:category/:userId/:filename')
   async getFileByUserIdAndFileName(
     @Param('category') category: string,

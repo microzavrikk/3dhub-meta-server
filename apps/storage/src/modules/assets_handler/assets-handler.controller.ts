@@ -5,7 +5,7 @@ import { CreateAssetDto } from "./types";
 import { AssetsHandlerService } from "./service/assets-handler.service";
 import { GetFileByUserIdDto } from '../../../../gateway/src/modules/assets-storage/dto/assets-get-by-id.dto';
 import { GetFileByUserIdAndFileNameDto } from '../../../../gateway/src/modules/assets-storage/dto/assets-get-by-filename.dto';
-
+import { AssetInfo } from '../../../../gateway/src/modules/assets-storage/assets-storage.types';
 @Controller()
 export class AssetsHandlerController {
     private readonly logger = new Logger(AssetsHandlerController.name);
@@ -25,6 +25,7 @@ export class AssetsHandlerController {
             return false;
         }
     }
+    
 
     @MessagePattern({ cmd: 'get-file-by-user-id' })
     async getFileByUserId(input: GetFileByUserIdDto): Promise<AWS.S3.GetObjectOutput> {
@@ -34,6 +35,16 @@ export class AssetsHandlerController {
             this.logger.error(`Failed to get asset: ${error.message}`);
         }
         return {};
+    }
+
+    @MessagePattern({ cmd: 'get-assets-by-user' })
+    async getAssetsByUser(userId: string): Promise<AssetInfo[]> {
+        try {
+            return await this.assetsHandlerService.getAssetsByUser(userId);
+        } catch (error: any) {
+            this.logger.error(`Failed to get assets: ${error.message}`);
+            return [];
+        }
     }
 
     @MessagePattern({ cmd: 'get-file-by-user-id-and-file-name' })
