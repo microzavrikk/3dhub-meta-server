@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import * as AWS from 'aws-sdk';
 import { ConfigService } from '@nestjs/config';
 import { CreateAssetDto } from '../types';
+import { AssetInfo } from 'apps/gateway/src/modules/assets-storage/assets-storage.types';
 
 @Injectable()
 export class AssetsHandlerS3Repository {
@@ -14,8 +15,31 @@ export class AssetsHandlerS3Repository {
       accessKeyId: this.configService.get<string>('AWS_ACCESS_KEY_ID'),
       secretAccessKey: this.configService.get<string>('AWS_SECRET_ACCESS_KEY'),
       region: this.configService.get<string>('AWS_S3_REGION'),
+      signatureVersion: 'v4'
     });
     this.bucketName = this.configService.get<string>('AWS_BUCKET_NAME') || 'default-bucket-name';
+    
+    const corsParams = {
+      Bucket: this.bucketName,
+      CORSConfiguration: {
+        CORSRules: [
+          {
+            AllowedHeaders: ['*'],
+            AllowedMethods: ['GET', 'PUT', 'POST', 'DELETE', 'HEAD'],
+            AllowedOrigins: ['*'], 
+            ExposeHeaders: ['ETag']
+          }
+        ]
+      }
+    };
+
+    this.s3.putBucketCors(corsParams, (err) => {
+      if (err) {
+        this.logger.error(`Failed to set CORS policy: ${err.message}`);
+      } else {
+        this.logger.log('CORS policy set successfully');
+      }
+    });
   }
 
   async uploadFile(data: CreateAssetDto, fileKey?: string, file?: Express.Multer.File): Promise<AWS.S3.ManagedUpload.SendData> {
@@ -34,6 +58,7 @@ export class AssetsHandlerS3Repository {
       Key: fileKey,
       Body: data.file.buffer,
       ContentType: data.file.mimetype,
+      ContentDisposition: 'inline'
     };
 
     try {
@@ -43,6 +68,70 @@ export class AssetsHandlerS3Repository {
     } catch (error: any) {
       this.logger.error(`Failed to upload file. ${error.message}`);
       throw new Error(`Failed to upload file. ${error.message}`);
+    }
+  }
+
+  async getAssetsByUser(username: string): Promise<AssetInfo[]> {
+    const params = {
+      Bucket: this.bucketName,
+      Prefix: '',
+    };
+
+    this.logger.log(`Getting assets by userId: ${username}`);
+
+    try {
+      const allObjects = await this.s3.listObjectsV2(params).promise();
+      
+      if (!allObjects.Contents) {
+        this.logger.log(`No objects found for user: ${username}`);
+        return [];
+      }
+
+      const userAssets = allObjects.Contents.filter(object => {
+        const key = object.Key || '';
+        const pathParts = key.split('/');
+        return pathParts.length >= 2 && pathParts[1] === username;
+      });
+
+      this.logger.log(`Found ${userAssets.length} assets for user: ${username}`);
+      
+      this.logger.log(userAssets);
+
+      const assets = await Promise.all(userAssets.map(async asset => {
+        const fileData = await this.s3.getObject({
+          Bucket: this.bucketName,
+          Key: asset.Key || ''
+        }).promise();
+
+        // Generate a signed URL for preview that will work in browser
+        const previewUrl = this.s3.getSignedUrl('getObject', {
+          Bucket: this.bucketName,
+          Key: asset.Key || '',
+          Expires: 3600, // URL expires in 1 hour
+          ResponseContentDisposition: 'inline'
+        });
+
+        return {
+          titleName: asset.Key?.split('/')[asset.Key?.split('/').length - 2] || '',
+          name: asset.Key?.split('/').pop() || '',
+          tags: [], 
+          category: asset.Key?.split('/')[0] || '',
+          createdAt: asset.LastModified?.toISOString() || '',
+          downloadUrl: [this.s3.getSignedUrl('getObject', {
+            Bucket: this.bucketName,
+            Key: asset.Key || '',
+            Expires: 3600,
+            ResponseContentDisposition: 'attachment'
+          })],
+          previewUrl: previewUrl // Use signed URL instead of blob URL
+        };
+      }));
+
+      return assets;
+
+    } catch (error: any) {
+      this.logger.error(`Failed to get assets for user ${username}: ${error.message}`);
+      throw new Error(`Failed to get assets for user: ${error.message}`);
     }
   }
 
@@ -93,6 +182,7 @@ export class AssetsHandlerS3Repository {
         const fileParams = {
           Bucket: this.bucketName,
           Key: data.Contents[0].Key!,
+          ResponseContentDisposition: 'inline'
         };
         const fileData = await this.s3.getObject(fileParams).promise();
         this.logger.log(`File retrieved successfully for user: ${userId}`);
@@ -111,6 +201,7 @@ export class AssetsHandlerS3Repository {
     const params = {
       Bucket: this.bucketName,
       Key: fileKey,
+      ResponseContentDisposition: 'inline'
     };
   
     try {
