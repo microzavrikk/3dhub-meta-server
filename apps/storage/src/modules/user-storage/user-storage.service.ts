@@ -17,4 +17,12 @@ export class UserStorageService {
   async getAvatar(username: string) {
     return this.userStorageS3Repository.getAvatar(username);
   }
+
+  async uploadBanner(username: string, file: Express.Multer.File) {
+    return this.userStorageS3Repository.uploadBanner(username, file);
+  }
+
+  async getBanner(username: string) {
+    return this.userStorageS3Repository.getBanner(username);
+  }
 }

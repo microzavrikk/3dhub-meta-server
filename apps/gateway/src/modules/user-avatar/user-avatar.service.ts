@@ -11,6 +11,29 @@ export class UserAvatarService {
         @Inject('USERS_SERVICE') private readonly usersClient: ClientProxy,
     ) {}
 
+    async uploadBanner(data: any) {
+        try {
+            const result = await this.usersClient.send(
+                { cmd: 'users.upload-banner' },
+                data
+            ).toPromise();
+            return result;
+        } catch (error: any) {
+            this.logger.error(`Error uploading banner: ${error.message}`);
+            throw new HttpException('Failed to upload banner', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    async getBanner(username: string) {
+        try {
+            const result = await this.usersClient.send({ cmd: 'users.get-banner' }, username).toPromise();
+            return result;
+        } catch (error: any) {
+            this.logger.error(`Error getting banner: ${error.message}`);
+            throw new HttpException('Failed to get banner', HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     async uploadAvatar(data: any) {
         try {
             const result = await this.usersClient.send(

@@ -13,6 +13,28 @@ export class UserAvatarController {
 
   constructor(private readonly userAvatarService: UserAvatarService) {}
 
+  @Get('banner/:username')
+  async getBanner(@Param('username') username: string) {
+    this.logger.log(`Received get banner request for user ${username}`);
+    const result = await this.userAvatarService.getBanner(username);
+    this.logger.log(`Get banner result: ${JSON.stringify(result)}`);
+    return result;
+  }
+
+  @Post('upload-banner') 
+  @UseInterceptors(FileInterceptor('banner'))
+  async uploadBanner(
+    @UploadedFile() file: Express.Multer.File,
+    @Body() updateAvatarDto: UpdateAvatarDto
+  ) {
+    this.logger.log(`Received upload banner request: ${JSON.stringify(updateAvatarDto)}, file size: ${file.size}`);
+
+    return this.userAvatarService.uploadBanner({
+      username: updateAvatarDto.username,
+      file: file
+    });
+  }
+
   @Post('upload')
   @UseInterceptors(FileInterceptor('avatar'))
   async uploadAvatar(

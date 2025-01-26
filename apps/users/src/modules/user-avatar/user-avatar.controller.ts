@@ -18,4 +18,14 @@ export class UserAvatarController {
     async getAvatar(username: string) {
         return this.userAvatarService.getAvatar(username);
     }
+
+    @MessagePattern({ cmd: 'users.upload-banner' })
+    async uploadBanner(data: any) {
+        return this.userAvatarService.uploadBanner(data);
+    }
+
+    @MessagePattern({ cmd: 'users.get-banner' })
+    async getBanner(username: string) {
+        return this.userAvatarService.getBanner(username);
+    }
 }

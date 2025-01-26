@@ -24,8 +24,18 @@ export class UserStorageController {
         }
     }
 
-    @MessagePattern({ cmd: 'storage.get-avatar' })
+    @MessagePattern({ cmd: 'storage.get-banner' })
     async getAvatar(username: string) {
         return this.userStorageService.getAvatar(username);
     }   
+
+    @MessagePattern({ cmd: 'storage.upload-banner' })
+    async uploadBanner(data: { username: string, file: Express.Multer.File }) {
+        return this.userStorageService.uploadBanner(data.username, data.file);
+    }
+
+    @MessagePattern({ cmd: 'storage.get-banner' })
+    async getBanner(username: string) {
+        return this.userStorageService.getBanner(username);
+    }
 }

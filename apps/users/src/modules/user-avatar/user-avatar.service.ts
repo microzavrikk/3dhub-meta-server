@@ -17,6 +17,19 @@ export class UserAvatarService {
       const result = await firstValueFrom(
         this.storageClient.send({ cmd: 'storage.upload-avatar' }, data)
       );
+      return result;
+    } catch (error: any) {
+      this.logger.error(`Error uploading avatar: ${error.message}`);
+      throw error;
+    }
+  }
+
+  async uploadBanner(data: { username: string, file: Express.Multer.File }) {
+    try {
+      this.logger.log(`Sending upload avatar request to storage service for user: ${data.username}`);
+      const result = await firstValueFrom(
+        this.storageClient.send({ cmd: 'storage.upload-avatar' }, data)
+      );
       
       if (!result) {
         throw new Error('Empty response from storage service');
@@ -24,6 +37,16 @@ export class UserAvatarService {
       return result;
     } catch (error: any) {
       this.logger.error(`Error uploading avatar: ${error.message}`);
+      throw error;
+    }
+  }
+
+  async getBanner(username: string) {
+    try {
+      const result = await this.storageClient.send({ cmd: 'storage.get-banner' }, username).toPromise();
+      return result;
+    } catch (error: any) {
+      this.logger.error(`Error getting banner: ${error.message}`);
       throw error;
     }
   }

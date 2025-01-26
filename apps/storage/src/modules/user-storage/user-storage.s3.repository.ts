@@ -117,4 +117,61 @@ export class UserStorageS3Repository {
       throw new Error(`Failed to delete avatar. ${error.message}`);
     }
   }
+
+  async uploadBanner(username: string, file: Express.Multer.File): Promise<AWS.S3.ManagedUpload.SendData> {
+    this.logger.log(`Uploading banner for user: ${username}`);
+    
+    const fileKey = `banners/${username}/banner${file.originalname.substring(file.originalname.lastIndexOf('.'))}`;
+    
+    const params = {
+      Bucket: this.bucketName,
+      Key: fileKey,
+      Body: file.buffer,
+      ContentType: file.mimetype
+    };
+
+    try {
+      const result = await this.s3.upload(params).promise();
+      this.logger.log(`Banner uploaded successfully for user ${username}`);
+      return result;
+    } catch (error: any) {
+      this.logger.error(`Failed to upload banner for user ${username}. ${error.message}`);
+      throw new Error(`Failed to upload banner. ${error.message}`);
+    }
+  }
+
+  async getBanner(username: string): Promise<string> {
+    const listParams = {
+      Bucket: this.bucketName,
+      Prefix: `banners/${username}/`,
+      MaxKeys: 1
+    };
+
+    try {
+      const listResult = await this.s3.listObjectsV2(listParams).promise();
+      
+      if (!listResult.Contents || listResult.Contents.length === 0) {
+        throw new Error('No banner found');
+      }
+
+      const latestBanner = listResult.Contents[0];
+      
+      if (!latestBanner.Key) {
+        throw new Error('Invalid banner key');
+      }
+
+      const signedUrl = await this.s3.getSignedUrlPromise('getObject', {
+        Bucket: this.bucketName,
+        Key: latestBanner.Key,
+        Expires: 3600
+      });
+
+      this.logger.log(`Banner URL: ${signedUrl}`);
+
+      return signedUrl;
+    } catch (error: any) {
+      this.logger.error(`Failed to get banner for user ${username}. ${error.message}`);
+      throw new Error(`Failed to get banner. ${error.message}`);
+    }
+  }
 }
