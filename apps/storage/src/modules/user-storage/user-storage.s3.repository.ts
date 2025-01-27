@@ -119,14 +119,38 @@ export class UserStorageS3Repository {
   }
 
   async uploadBanner(username: string, file: Express.Multer.File): Promise<AWS.S3.ManagedUpload.SendData> {
+    if (!file.buffer || !file.size) {
+      throw new Error('Invalid file: File buffer or size is missing');
+    }
+
     this.logger.log(`Uploading banner for user: ${username}`);
     
     const fileKey = `banners/${username}/banner${file.originalname.substring(file.originalname.lastIndexOf('.'))}`;
     
+    try {
+      const listParams = {
+        Bucket: this.bucketName,
+        Prefix: `banners/${username}/`,
+      };
+      const existingFiles = await this.s3.listObjectsV2(listParams).promise();
+      
+      if (existingFiles.Contents && existingFiles.Contents.length > 0) {
+        await Promise.all(existingFiles.Contents.map(file => {
+          return this.s3.deleteObject({
+            Bucket: this.bucketName,
+            Key: file.Key!
+          }).promise();
+        }));
+        this.logger.log(`Deleted existing banner for user ${username}`);
+      }
+    } catch (error: any) {
+      this.logger.warn(`Failed to delete existing banner: ${error.message}`);
+    }
+
     const params = {
       Bucket: this.bucketName,
       Key: fileKey,
-      Body: file.buffer,
+      Body: Buffer.from(file.buffer),
       ContentType: file.mimetype
     };
 

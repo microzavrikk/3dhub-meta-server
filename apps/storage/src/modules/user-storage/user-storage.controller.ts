@@ -24,7 +24,7 @@ export class UserStorageController {
         }
     }
 
-    @MessagePattern({ cmd: 'storage.get-banner' })
+    @MessagePattern({ cmd: 'storage.get-avatar' })
     async getAvatar(username: string) {
         return this.userStorageService.getAvatar(username);
     }   

@@ -28,7 +28,7 @@ export class UserAvatarService {
     try {
       this.logger.log(`Sending upload avatar request to storage service for user: ${data.username}`);
       const result = await firstValueFrom(
-        this.storageClient.send({ cmd: 'storage.upload-avatar' }, data)
+        this.storageClient.send({ cmd: 'storage.upload-banner' }, data)
       );
       
       if (!result) {
