@@ -20,6 +20,16 @@ export class AssetsHandlerService {
     @Inject('ASSETS_HANDLER_SERVICE') private readonly client: ClientProxy
   ) {}
 
+  async deleteAllAssets(username: string): Promise<boolean> {
+    try {
+      await this.assetsHandlerS3Repository.deleteAllAssets(username);
+      return true;
+    } catch (error: any) {
+      this.logger.error(`Failed to delete all assets: ${error.message}`);
+      return false;
+    }
+  }
+
   async createAsset(data: CreateAssetDto, file: Express.Multer.File): Promise<Asset> {    
     try {
       if (!data.file) {

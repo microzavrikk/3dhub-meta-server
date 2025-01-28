@@ -17,8 +17,7 @@ export class AssetsHandlerS3Repository {
       region: this.configService.get<string>('AWS_S3_REGION'),
       signatureVersion: 'v4'
     });
-    this.bucketName = this.configService.get<string>('AWS_BUCKET_NAME') || 'default-bucket-name';
-    
+    this.bucketName = this.configService.get<string>('AWS_BUCKET_NAME') || 'default-bucket-name';    
     const corsParams = {
       Bucket: this.bucketName,
       CORSConfiguration: {
@@ -42,6 +41,58 @@ export class AssetsHandlerS3Repository {
     });
   }
 
+  async deleteAllAssets(username: string): Promise<boolean> {
+    this.logger.log(`Deleting all assets for user: ${username}`);
+    try {
+      const categoriesParams = {
+        Bucket: this.bucketName,
+        Delimiter: '/'
+      };
+      
+      const categories = await this.s3.listObjectsV2(categoriesParams).promise();
+      
+      if (!categories.CommonPrefixes?.length) {
+        this.logger.log('No categories found');
+        return true;
+      }
+
+      for (const prefix of categories.CommonPrefixes) {
+        if (!prefix.Prefix) continue;
+        
+        if (prefix.Prefix.startsWith('banners/') || prefix.Prefix.startsWith('avatars/')) {
+          this.logger.log(`Skipping protected category: ${prefix.Prefix}`);
+          continue;
+        }
+
+        const listParams = {
+          Bucket: this.bucketName,
+          Prefix: `${prefix.Prefix}${username}/`
+        };
+
+        const objects = await this.s3.listObjectsV2(listParams).promise();
+        
+        if (!objects.Contents?.length) continue;
+
+        const deleteParams = {
+          Bucket: this.bucketName,
+          Delete: {
+            Objects: objects.Contents
+              .filter(obj => obj.Key)
+              .map(({ Key }) => ({ Key: Key! }))
+          }
+        };
+
+        await this.s3.deleteObjects(deleteParams).promise();
+        this.logger.log(`Deleted assets for user ${username} in category ${prefix.Prefix}`);
+      }
+
+      return true;
+    } catch (error: any) {
+      this.logger.error(`Failed to delete assets for user ${username}: ${error.message}`);
+      throw error;
+    }
+  }
+
   async uploadFile(data: CreateAssetDto, fileKey?: string, file?: Express.Multer.File): Promise<AWS.S3.ManagedUpload.SendData> {
     if (!fileKey) {
       throw new Error('FileKey is required');
@@ -52,17 +103,18 @@ export class AssetsHandlerS3Repository {
       throw new Error(`File with key ${fileKey} already exists`);
     }
     
-    this.logger.log(`Uploading file: ${fileKey}, ${data.file.buffer} bytes`);
-    const params = {
+    this.logger.log(`Uploading file: ${fileKey}, ${data.file.buffer.length} bytes`);
+
+    const uploadParams = {
       Bucket: this.bucketName,
       Key: fileKey,
       Body: data.file.buffer,
-      ContentType: data.file.mimetype,
+      ContentType: `${data.file.mimetype}; charset=utf-8`,
       ContentDisposition: 'inline'
     };
 
     try {
-      const data = await this.s3.upload(params).promise();
+      const data = await this.s3.upload(uploadParams).promise();
       this.logger.log(`File uploaded successfully. ${data.Location}`);
       return data;
     } catch (error: any) {
@@ -103,11 +155,10 @@ export class AssetsHandlerS3Repository {
           Key: asset.Key || ''
         }).promise();
 
-        // Generate a signed URL for preview that will work in browser
         const previewUrl = this.s3.getSignedUrl('getObject', {
           Bucket: this.bucketName,
           Key: asset.Key || '',
-          Expires: 3600, // URL expires in 1 hour
+          Expires: 3600, 
           ResponseContentDisposition: 'inline'
         });
 
@@ -123,7 +174,7 @@ export class AssetsHandlerS3Repository {
             Expires: 3600,
             ResponseContentDisposition: 'attachment'
           })],
-          previewUrl: previewUrl // Use signed URL instead of blob URL
+          previewUrl: previewUrl 
         };
       }));
 

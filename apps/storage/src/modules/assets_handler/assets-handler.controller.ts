@@ -16,16 +16,27 @@ export class AssetsHandlerController {
 
     @MessagePattern({ cmd: 'upload-asset' })
     async uploadAsset(data: CreateAssetDto, file: Express.Multer.File): Promise<boolean> {
-        
         try {
-            await this.assetsHandlerService.createAsset(data, file);
+            await this.assetsHandlerService.createAsset(data, data.file);
             return true;
         } catch (error: any) {
             this.logger.error(`Failed to upload asset: ${error.message}`);
             return false;
         }
     }
-    
+
+    @MessagePattern({ cmd: 'delete-all-assets' })
+    async deleteAllAssets(username: string): Promise<boolean> {
+        this.logger.log('Deleting all assets for user:', username?.username);
+        
+        try {
+            await this.assetsHandlerService.deleteAllAssets(username?.username);
+            return true;
+        } catch (error: any) {
+            this.logger.error(`Failed to delete all assets: ${error.message}`);
+            return false;
+        }
+    }
 
     @MessagePattern({ cmd: 'get-file-by-user-id' })
     async getFileByUserId(input: GetFileByUserIdDto): Promise<AWS.S3.GetObjectOutput> {
