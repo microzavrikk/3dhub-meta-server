@@ -1,0 +1,7 @@
+type Mutation {
+    SetRoles: SetRolesMutation
+}
+
+type SetRolesMutation {
+    setUserRole(username: String!, newRole: String!): Boolean!
+}
