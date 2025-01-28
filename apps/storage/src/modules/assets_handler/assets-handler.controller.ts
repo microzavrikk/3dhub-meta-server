@@ -26,11 +26,11 @@ export class AssetsHandlerController {
     }
 
     @MessagePattern({ cmd: 'delete-all-assets' })
-    async deleteAllAssets(username: string): Promise<boolean> {
-        this.logger.log('Deleting all assets for user:', username?.username);
+    async deleteAllAssets(data: { username: string }): Promise<boolean> {
+        this.logger.log('Deleting all assets for user:', data?.username);
         
         try {
-            await this.assetsHandlerService.deleteAllAssets(username?.username);
+            await this.assetsHandlerService.deleteAllAssets(data?.username);
             return true;
         } catch (error: any) {
             this.logger.error(`Failed to delete all assets: ${error.message}`);

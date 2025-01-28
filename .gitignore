@@ -40,3 +40,4 @@ lerna-debug.log*
 apps/**/src/utils/prisma/types/*
 /uploads
 data.txt
+assets-service/1738023882586-b4e8361c1ea1c145-scene.gltf
