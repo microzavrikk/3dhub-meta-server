@@ -1,0 +1,17 @@
+type Query {
+    GlobalSearch: GlobalSearchQuery
+}
+
+type GlobalSearchQuery {
+    search(query: String!): GlobalSearchResult!
+}
+
+type GlobalSearchResult {
+    users: [UserSearchResult!]!
+    modelsCount: Int!
+}
+
+type UserSearchResult {
+    username: String!
+    avatarUrl: String
+}

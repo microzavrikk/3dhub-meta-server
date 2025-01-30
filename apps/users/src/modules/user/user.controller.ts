@@ -13,7 +13,7 @@ export class UserController {
     private readonly logger = new Logger(UserController.name);
 
     constructor(
-        readonly service: UserService,
+        private readonly userService: UserService,
         private readonly userAuthService: UserAuthService,
     ) {}
 
@@ -30,23 +30,28 @@ export class UserController {
     @MessagePattern({ cmd: 'user-delete-account' })
     async deleteAccount(email: string): Promise<boolean> {
         this.logger.log(`Received request to delete user account with email: ${email}`);
-        return this.service.deleteUserByEmail(email);
+        return this.userService.deleteUserByEmail(email);
     }
 
     @MessagePattern({ cmd: 'user-confirm-email' })
     async confirmEmail(userId: string): Promise<boolean> {
         this.logger.log(`Received request to confirm email for user ID: ${userId}`);
-        return this.service.confirmEmail(userId);
+        return this.userService.confirmEmail(userId);
     }
     
 
     ///////////////////////////////////////////////////////////////////////////////////
 
+    @MessagePattern({ cmd: 'user-search' })
+    async search(query: string): Promise<User[]> {
+        this.logger.log(`Received request to search users with query: ${query}`);
+        return this.userService.searchUsers(query);
+    }
 
     @MessagePattern({ cmd: 'user-find-by-username' })
     async findUserByUsername(username: string): Promise<User | null> {
         this.logger.log(`Received request to find user by username: ${username}`);
-        const user = await this.service.findUserByUsername(username);
+        const user = await this.userService.findUserByUsername(username);
         this.logger.log(`Found user: ${JSON.stringify(user, null, 2)}`);
         return user;
     }
@@ -54,7 +59,7 @@ export class UserController {
     @MessagePattern({ cmd: 'user-find-by-id' })
     async findUserById(id: string): Promise<User | null> {
         this.logger.log(`Received request to find user by id: ${id}`);
-        const user = await this.service.findUserById(id);
+        const user = await this.userService.findUserById(id);
         this.logger.log(`Found user: ${JSON.stringify(user, null, 2)}`);
         return user;
     }
@@ -62,13 +67,13 @@ export class UserController {
     @MessagePattern({ cmd: 'user-find-by-email' })
     async findUserByEmail(email: string): Promise<User | null> {
         this.logger.log(`Received request to find user by email: ${email}`);
-        const user = await this.service.findUserByEmail(email);
+        const user = await this.userService.findUserByEmail(email);
         this.logger.log(`Found user: ${JSON.stringify(user, null, 2)}`);
         return user;
     }
 
     @MessagePattern({ cmd: 'user-find-all' })
     async findAll(): Promise<User[] | null> {
-        return this.service.findAll();
+        return this.userService.findAll();
     }
 }

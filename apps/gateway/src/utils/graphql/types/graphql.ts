@@ -94,6 +94,8 @@ export abstract class IQuery {
 
     abstract Category(): Nullable<CategoryQuery> | Promise<Nullable<CategoryQuery>>;
 
+    abstract GlobalSearch(): Nullable<GlobalSearchQuery> | Promise<Nullable<GlobalSearchQuery>>;
+
     abstract Ping(): Nullable<PingQuery> | Promise<Nullable<PingQuery>>;
 
     abstract SearchUser(): Nullable<SearchUserQuery> | Promise<Nullable<SearchUserQuery>>;
@@ -107,6 +109,8 @@ export abstract class IMutation {
     abstract AssetsMutation(): Nullable<AssetsStorageMutation> | Promise<Nullable<AssetsStorageMutation>>;
 
     abstract Auth(): Nullable<AuthMutation> | Promise<Nullable<AuthMutation>>;
+
+    abstract SetRoles(): Nullable<SetRolesMutation> | Promise<Nullable<SetRolesMutation>>;
 }
 
 export class AssetsStorageMutation {
@@ -158,8 +162,26 @@ export class CategoryQuery {
     getAllCategoryInS3: string[];
 }
 
+export class GlobalSearchQuery {
+    search?: GlobalSearchResult;
+}
+
+export class GlobalSearchResult {
+    users: UserSearchResult[];
+    modelsCount: number;
+}
+
+export class UserSearchResult {
+    username: string;
+    avatarUrl?: Nullable<string>;
+}
+
 export class PingQuery {
     ping: string;
+}
+
+export class SetRolesMutation {
+    setUserRole?: boolean;
 }
 
 export class SearchUserQuery {

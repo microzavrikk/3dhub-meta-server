@@ -10,6 +10,7 @@ import { CategoryModule } from './modules/category/category.module';
 import { PingModule } from './modules/ping/ping.module';
 import { SearchUserModule } from './modules/search-user/search-user.module';
 import { UserAvatarModule } from './modules/user-avatar/user-avatar.module';
+import { GlobalSearchModule } from './modules/global-search/global-search.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { UserAvatarModule } from './modules/user-avatar/user-avatar.module';
     PingModule,
     SearchUserModule,
     UserAvatarModule,
+    GlobalSearchModule
   ],
   controllers: [GatewayController],
   providers: [GatewayService],

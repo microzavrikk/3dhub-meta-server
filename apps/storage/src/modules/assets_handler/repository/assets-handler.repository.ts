@@ -3,11 +3,23 @@ import { PrismaService } from '../../../utils/prisma/prisma.service';
 import { Prisma, ThirdModel } from '../../../utils/prisma/types';
 import { CreateAssetDto, UpdateAssetDto } from '../types';
 
+
+
 @Injectable()
 export class AssetsHandlerRepository {
   private readonly logger = new Logger(AssetsHandlerRepository.name);
 
   constructor(private readonly prisma: PrismaService) {}
+
+  async searchModels(query: string): Promise<number> {
+    return await this.prisma.thirdModel.count({ 
+      where: {
+        name: {
+          contains: query
+        }
+      }
+    });
+  }
 
   async createAsset(data: CreateAssetDto): Promise<any> {
     try {
@@ -17,13 +29,13 @@ export class AssetsHandlerRepository {
           description: data.newAsset.description,
           category: data.newAsset.category,
           fileKey: data.newAsset.fileKey,
-          bucketName: data.newAsset.bucketName || 'default-bucket-name', // Add default bucket name
+          bucketName: data.newAsset.bucketName || 'default-bucket-name', 
           fileSize: isNaN(parseInt(String(data.newAsset.fileSize))) ? 0 : parseInt(String(data.newAsset.fileSize)),
-          fileType: data.newAsset.fileType || 'application/octet-stream', // Add default file type
+          fileType: data.newAsset.fileType || 'application/octet-stream',
           tags: Array.isArray(data.newAsset.tags) 
             ? data.newAsset.tags.filter((tag): tag is string => !!tag)
             : [data.newAsset.tags].filter((tag): tag is string => !!tag),
-          ownerId: data.newAsset.ownerId || 'default-owner', // Add default owner
+          ownerId: data.newAsset.ownerId || 'default-owner', 
           publicAccess: data.newAsset.publicAccess === 'true' 
             || data.newAsset.publicAccess === true 
             || false,
@@ -47,13 +59,13 @@ export class AssetsHandlerRepository {
           name: data.newAsset.name,
           description: data.newAsset.description,
           fileKey: data.newAsset.fileKey,
-          bucketName: data.newAsset.bucketName || 'default-bucket-name', // Add default bucket name
+          bucketName: data.newAsset.bucketName || 'default-bucket-name', 
           fileSize: isNaN(parseInt(String(data.newAsset.fileSize))) ? 0 : parseInt(String(data.newAsset.fileSize)),
-          fileType: data.newAsset.fileType || 'application/octet-stream', // Add default file type
+          fileType: data.newAsset.fileType || 'application/octet-stream',
           tags: Array.isArray(data.newAsset.tags) 
             ? data.newAsset.tags.filter((tag): tag is string => !!tag)
             : [data.newAsset.tags].filter((tag): tag is string => !!tag),
-          ownerId: data.newAsset.ownerId || 'default-owner', // Add default owner
+          ownerId: data.newAsset.ownerId || 'default-owner', 
           publicAccess: data.newAsset.publicAccess === 'true' 
             || data.newAsset.publicAccess === true 
             || false,

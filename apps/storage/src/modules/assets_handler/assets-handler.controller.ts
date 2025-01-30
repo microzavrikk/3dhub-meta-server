@@ -6,6 +6,8 @@ import { AssetsHandlerService } from "./service/assets-handler.service";
 import { GetFileByUserIdDto } from '../../../../gateway/src/modules/assets-storage/dto/assets-get-by-id.dto';
 import { GetFileByUserIdAndFileNameDto } from '../../../../gateway/src/modules/assets-storage/dto/assets-get-by-filename.dto';
 import { AssetInfo } from '../../../../gateway/src/modules/assets-storage/assets-storage.types';
+import { ThirdModel } from '../../utils/prisma/types';
+
 @Controller()
 export class AssetsHandlerController {
     private readonly logger = new Logger(AssetsHandlerController.name);
@@ -13,6 +15,8 @@ export class AssetsHandlerController {
     constructor(
         private readonly assetsHandlerService: AssetsHandlerService
     ) {}
+
+    
 
     @MessagePattern({ cmd: 'upload-asset' })
     async uploadAsset(data: CreateAssetDto, file: Express.Multer.File): Promise<boolean> {
@@ -22,6 +26,17 @@ export class AssetsHandlerController {
         } catch (error: any) {
             this.logger.error(`Failed to upload asset: ${error.message}`);
             return false;
+        }
+    }
+
+    @MessagePattern({ cmd: 'search-models-count' })
+    async searchModels(query: string): Promise<number> {
+        this.logger.log(`Searching models with query: ${query}`);
+        try {
+            return await this.assetsHandlerService.getModelsCountByName(query);
+        } catch (error: any) {
+            this.logger.error(`Failed to search models: ${error.message}`);
+            return 0;
         }
     }
 

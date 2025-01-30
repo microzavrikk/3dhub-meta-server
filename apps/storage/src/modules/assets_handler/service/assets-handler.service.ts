@@ -20,6 +20,11 @@ export class AssetsHandlerService {
     @Inject('ASSETS_HANDLER_SERVICE') private readonly client: ClientProxy
   ) {}
 
+  async getModelsCountByName(query: string): Promise<number> {
+    const models = await this.assetsHandlerRepository.searchModels(query);
+    return models;
+  }
+
   async deleteAllAssets(username: string): Promise<boolean> {
     try {
       await this.assetsHandlerS3Repository.deleteAllAssets(username);

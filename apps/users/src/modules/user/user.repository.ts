@@ -10,6 +10,16 @@ export class UserRepository {
 
     constructor(private readonly prisma: PrismaService) {}
 
+    async searchUsers(query: string): Promise<User[]> {
+        return await this.prisma.user.findMany({
+            where: {
+                username: {
+                    contains: query
+                }
+            }
+        });
+    }
+
     async findUserByUsername(username: string): Promise<User | null> {
         const where: Prisma.UserWhereUniqueInput = { username };
         return await this.prisma.user.findFirst({ where });

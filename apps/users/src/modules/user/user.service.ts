@@ -15,6 +15,10 @@ export class UserService {
         return await this.userRepository.createUser(data);
     }
 
+    async searchUsers(query: string): Promise<User[]> {
+        return await this.userRepository.searchUsers(query);
+    }
+
     async findAll(): Promise<User[] | null> {
         return await this.userRepository.findAllUsers();
     }
