@@ -1,0 +1,16 @@
+type Profile {
+  id: ID!
+  userId: String!
+  avatarUrl: String
+  bio: String
+  socialLinks: JSON
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Query {
+  getProfile(userId: String!): Profile
+}
+
+scalar DateTime
+scalar JSON

@@ -52,6 +52,12 @@ export class UserLoginInput {
     password: string;
 }
 
+export class ProfileInput {
+    bio?: Nullable<string>;
+    socialLinks?: Nullable<JSON>;
+    avatarUrl?: Nullable<string>;
+}
+
 export class SearchUserInput {
     username?: Nullable<string>;
     email?: Nullable<string>;
@@ -98,6 +104,8 @@ export abstract class IQuery {
 
     abstract Ping(): Nullable<PingQuery> | Promise<Nullable<PingQuery>>;
 
+    abstract getProfile(userId: string): Nullable<Profile> | Promise<Nullable<Profile>>;
+
     abstract SearchUser(): Nullable<SearchUserQuery> | Promise<Nullable<SearchUserQuery>>;
 }
 
@@ -109,6 +117,12 @@ export abstract class IMutation {
     abstract AssetsMutation(): Nullable<AssetsStorageMutation> | Promise<Nullable<AssetsStorageMutation>>;
 
     abstract Auth(): Nullable<AuthMutation> | Promise<Nullable<AuthMutation>>;
+
+    abstract updateProfile(userId: string, profile: ProfileInput): Profile | Promise<Profile>;
+
+    abstract setAvatarUrl(userId: string, avatarUrl: string): Profile | Promise<Profile>;
+
+    abstract deleteProfile(userId: string): boolean | Promise<boolean>;
 
     abstract SetRoles(): Nullable<SetRolesMutation> | Promise<Nullable<SetRolesMutation>>;
 }
@@ -169,6 +183,7 @@ export class GlobalSearchQuery {
 export class GlobalSearchResult {
     users: UserSearchResult[];
     modelsCount: number;
+    executionTime: number;
 }
 
 export class UserSearchResult {
@@ -178,6 +193,16 @@ export class UserSearchResult {
 
 export class PingQuery {
     ping: string;
+}
+
+export class Profile {
+    id: string;
+    userId: string;
+    avatarUrl?: Nullable<string>;
+    bio?: Nullable<string>;
+    socialLinks?: Nullable<JSON>;
+    createdAt: DateTime;
+    updatedAt: DateTime;
 }
 
 export class SetRolesMutation {
@@ -194,4 +219,5 @@ export class SearchUserQuery {
 
 export type JSON = any;
 export type Upload = any;
+export type DateTime = any;
 type Nullable<T> = T | null;

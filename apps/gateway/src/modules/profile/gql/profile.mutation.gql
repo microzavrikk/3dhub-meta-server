@@ -1,0 +1,13 @@
+type Mutation {
+  updateProfile(userId: String!, profile: ProfileInput!): Profile!
+  setAvatarUrl(userId: String!, avatarUrl: String!): Profile!
+  deleteProfile(userId: String!): Boolean!
+}
+
+input ProfileInput {
+  bio: String
+  socialLinks: JSON
+  avatarUrl: String
+}
+
+scalar JSON
