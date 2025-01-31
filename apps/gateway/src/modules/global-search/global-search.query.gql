@@ -9,6 +9,7 @@ type GlobalSearchQuery {
 type GlobalSearchResult {
     users: [UserSearchResult!]!
     modelsCount: Int!
+    executionTime: Int!
 }
 
 type UserSearchResult {

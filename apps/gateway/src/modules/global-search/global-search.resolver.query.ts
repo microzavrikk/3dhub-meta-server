@@ -1,6 +1,6 @@
 import { Resolver, Query, ResolveField, Args } from "@nestjs/graphql";
 import { Logger } from "@nestjs/common";
-import { GlobalSearchQuery } from "../../utils/graphql/types/graphql";
+import { GlobalSearchQuery, GlobalSearchResult } from "../../utils/graphql/types/graphql";
 import { GlobalSearchService } from "./global-search.service";
 
 @Resolver(() => GlobalSearchQuery)
@@ -14,11 +14,22 @@ export class GlobalSearchQueryResolver {
         return {};
     }
 
-    @ResolveField('search')
+    @ResolveField(() => GlobalSearchResult)
     async search(
         @Args('query') query: string
     ) {
         this.logger.log("[search] Global search request received");
-        return this.globalSearchService.search(query);
+        const startTime = Date.now();
+        
+        const result = await this.globalSearchService.search(query);
+        
+        const endTime = Date.now();
+        const executionTime = endTime - startTime;
+        this.logger.log(`[search] Execution time: ${executionTime}ms`);
+        
+        return {
+            ...result,
+            executionTime
+        };
     }
 }
