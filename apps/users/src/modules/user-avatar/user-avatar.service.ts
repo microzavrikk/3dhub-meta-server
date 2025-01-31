@@ -2,13 +2,15 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { Inject } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
+import { ProfileService } from '../profile/profile.service';
 
 @Injectable()
 export class UserAvatarService {
   private readonly logger = new Logger(UserAvatarService.name);
 
   constructor(
-    @Inject('STORAGE_SERVICE') private readonly storageClient: ClientProxy
+    @Inject('STORAGE_SERVICE') private readonly storageClient: ClientProxy,
+    private readonly profileService: ProfileService
   ) {}
 
   async uploadAvatar(data: { username: string, file: Express.Multer.File }) {
@@ -17,6 +19,11 @@ export class UserAvatarService {
       const result = await firstValueFrom(
         this.storageClient.send({ cmd: 'storage.upload-avatar' }, data)
       );
+      const avatarUrl = await firstValueFrom(
+        this.storageClient.send({ cmd: 'storage.get-avatar' }, data.username)
+      );
+      this.logger.log(`Avatar uploaded successfully for user: ${avatarUrl}`);
+      await this.profileService.setAvatarUrl(data.username, avatarUrl);
       return result;
     } catch (error: any) {
       this.logger.error(`Error uploading avatar: ${error.message}`);
@@ -30,10 +37,11 @@ export class UserAvatarService {
       const result = await firstValueFrom(
         this.storageClient.send({ cmd: 'storage.upload-banner' }, data)
       );
-      
-      if (!result) {
-        throw new Error('Empty response from storage service');
-      }
+      const bannerUrl = await firstValueFrom(
+        this.storageClient.send({ cmd: 'storage.get-banner' }, data.username)
+      );
+      this.logger.log(`Banner uploaded successfully for user: ${bannerUrl}`);
+      await this.profileService.setBackgroundUrl(data.username, bannerUrl);
       return result;
     } catch (error: any) {
       this.logger.error(`Error uploading avatar: ${error.message}`);

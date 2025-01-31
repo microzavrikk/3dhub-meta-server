@@ -1,21 +1,51 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Inject } from '@nestjs/common';
 import * as AWS from 'aws-sdk';
 import { ConfigService } from '@nestjs/config';
+import { ClientProxy } from '@nestjs/microservices';
 
 @Injectable()
 export class UserStorageS3Repository {
   private readonly logger = new Logger(UserStorageS3Repository.name);
   private readonly s3: AWS.S3;
   private readonly bucketName: string;
+  private readonly urlExpirationTime: number = 24 * 60 * 60; // 24 hours in seconds
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+    @Inject('PROFILE_SERVICE') private readonly rpcService: ClientProxy
+  ) {
     this.s3 = new AWS.S3({
       accessKeyId: this.configService.get<string>('AWS_ACCESS_KEY_ID'),
       secretAccessKey: this.configService.get<string>('AWS_SECRET_ACCESS_KEY'),
       region: this.configService.get<string>('AWS_S3_REGION'),
+      signatureVersion: 'v4'
     });
     this.bucketName = this.configService.get<string>('AWS_BUCKET_NAME') || 'default-bucket-name';
+
+    // Configure CORS for the S3 bucket
+    const corsParams = {
+      Bucket: this.bucketName,
+      CORSConfiguration: {
+        CORSRules: [
+          {
+            AllowedHeaders: ['*'],
+            AllowedMethods: ['GET', 'PUT', 'POST', 'DELETE', 'HEAD'],
+            AllowedOrigins: ['*'],
+            ExposeHeaders: ['ETag']
+          }
+        ]
+      }
+    };
+
+    this.s3.putBucketCors(corsParams, (err) => {
+      if (err) {
+        this.logger.error(`Failed to set CORS policy: ${err.message}`);
+      } else {
+        this.logger.log('CORS policy set successfully');
+      }
+    });
   }
+  
 
   async uploadAvatar(username: string, file: Express.Multer.File): Promise<AWS.S3.ManagedUpload.SendData> {
     if (!file.buffer || !file.size) {
@@ -50,14 +80,21 @@ export class UserStorageS3Repository {
     const params = {
       Bucket: this.bucketName,
       Key: fileKey,
-      Body: Buffer.from(file.buffer), 
+      Body: Buffer.from(file.buffer),
       ContentType: file.mimetype
     };
 
     try {
       const data = await this.s3.upload(params).promise();
-      this.logger.log(`Avatar uploaded successfully for user ${username}. ${data.Location}`);
-      return data;
+      const publicUrl = `https://${this.bucketName}.s3.${this.configService.get<string>('AWS_S3_REGION')}.amazonaws.com/${fileKey}`;
+      this.logger.log(`Avatar uploaded successfully for user ${username}. Public URL: ${publicUrl}`);
+      
+      this.rpcService.emit('profile-set-avatar', { userId: username, avatarUrl: publicUrl });
+      
+      return {
+        ...data,
+        Location: publicUrl 
+      };
     } catch (error: any) {
       this.logger.error(`Failed to upload avatar for user ${username}. ${error.message}`);
       throw new Error(`Failed to upload avatar. ${error.message}`);
@@ -89,7 +126,7 @@ export class UserStorageS3Repository {
       const signedUrl = await this.s3.getSignedUrlPromise('getObject', {
         Bucket: this.bucketName,
         Key: latestAvatar.Key,
-        Expires: 3600
+        Expires: this.urlExpirationTime
       });
 
       this.logger.log(`Avatar URL: ${signedUrl}`);
@@ -123,10 +160,11 @@ export class UserStorageS3Repository {
       throw new Error('Invalid file: File buffer or size is missing');
     }
 
-    this.logger.log(`Uploading banner for user: ${username}`);
-    
     const fileKey = `banners/${username}/banner${file.originalname.substring(file.originalname.lastIndexOf('.'))}`;
     
+    this.logger.log(`File size: ${file.size} bytes`);
+    this.logger.log(`Uploading banner for user ${username}: ${fileKey}`);
+
     try {
       const listParams = {
         Bucket: this.bucketName,
@@ -146,7 +184,7 @@ export class UserStorageS3Repository {
     } catch (error: any) {
       this.logger.warn(`Failed to delete existing banner: ${error.message}`);
     }
-
+    
     const params = {
       Bucket: this.bucketName,
       Key: fileKey,
@@ -155,9 +193,18 @@ export class UserStorageS3Repository {
     };
 
     try {
-      const result = await this.s3.upload(params).promise();
-      this.logger.log(`Banner uploaded successfully for user ${username}`);
-      return result;
+      const data = await this.s3.upload(params).promise();
+      const publicUrl = `https://${this.bucketName}.s3.${this.configService.get<string>('AWS_S3_REGION')}.amazonaws.com/${fileKey}`;
+      this.logger.log(`Banner uploaded successfully for user ${username}. Public URL: ${publicUrl}`);
+      
+      this.rpcService.emit('profile-set-background', { userId: username, backgroundUrl: publicUrl });
+
+      
+      
+      return {
+        ...data,
+        Location: publicUrl 
+      };
     } catch (error: any) {
       this.logger.error(`Failed to upload banner for user ${username}. ${error.message}`);
       throw new Error(`Failed to upload banner. ${error.message}`);
@@ -187,7 +234,7 @@ export class UserStorageS3Repository {
       const signedUrl = await this.s3.getSignedUrlPromise('getObject', {
         Bucket: this.bucketName,
         Key: latestBanner.Key,
-        Expires: 3600
+        Expires: this.urlExpirationTime
       });
 
       this.logger.log(`Banner URL: ${signedUrl}`);

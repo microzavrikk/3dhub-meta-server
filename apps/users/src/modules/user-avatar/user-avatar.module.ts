@@ -2,9 +2,11 @@ import { Module } from '@nestjs/common';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { UserAvatarService } from './user-avatar.service';
 import { UserAvatarController } from './user-avatar.controller'
+import { ProfileModule } from '../profile/profile.module';
 
 @Module({
   imports: [
+    ProfileModule,
     ClientsModule.register([
       {
         name: 'STORAGE_SERVICE',

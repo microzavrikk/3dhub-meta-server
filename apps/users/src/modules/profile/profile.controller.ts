@@ -21,7 +21,13 @@ export class ProfileController {
     @MessagePattern({ cmd: 'profile-set-avatar' })
     async setAvatarUrl(data: { userId: string, avatarUrl: string }): Promise<Profile> {
         this.logger.log(`Received request to set avatar URL for user ID: ${data.userId}`);
-        return this.profileService.updateProfile(data.userId, { avatarUrl: data.avatarUrl });
+        return this.profileService.setAvatarUrl(data.userId, data.avatarUrl);
+    }
+
+    @MessagePattern({ cmd: 'profile-set-background' })
+    async setBackgroundUrl(data: { userId: string, backgroundUrl: string }): Promise<Profile> {
+        this.logger.log(`Received request to set background URL for user ID: ${data.userId}`);
+        return this.profileService.updateProfile(data.userId, { backgroundUrl: data.backgroundUrl });
     }
 
     @MessagePattern({ cmd: 'profile-update' })

@@ -11,12 +11,14 @@ import { PingModule } from './modules/ping/ping.module';
 import { SearchUserModule } from './modules/search-user/search-user.module';
 import { UserAvatarModule } from './modules/user-avatar/user-avatar.module';
 import { GlobalSearchModule } from './modules/global-search/global-search.module';
+import { ProfileModule } from './modules/profile/profile.module';
 
 @Module({
   imports: [
     GraphqlModule,
     SessionModule,
     AuthModule,
+    ProfileModule,
     AssetsStorageModule,
     CategoryModule,
     PingModule,

@@ -15,7 +15,15 @@ import { UserStorageS3Repository } from './user-storage.s3.repository';
           servers: ['nats://localhost:4222'],
         },
       },
+      {
+        name: 'PROFILE_SERVICE',
+        transport: Transport.NATS,
+        options: {
+          servers: ['nats://localhost:4222'],
+        }
+      }
     ]),
+
   ],
   controllers: [UserStorageController],
   providers: [UserStorageService, UserStorageS3Repository],

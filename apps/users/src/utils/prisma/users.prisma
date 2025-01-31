@@ -29,14 +29,15 @@ model User {
 }
 
 model Profile {
-  id          String  @id @default(cuid())
-  userId      String  @unique
-  user        User    @relation(fields: [userId], references: [id])
-  avatarUrl   String?
-  bio         String?
-  socialLinks Json?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id          String    @id @default(cuid())
+  userId      String    @unique
+  user        User      @relation(fields: [userId], references: [id])
+  avatarUrl   String?   @default("https://www.shutterstock.com/image-vector/avatar-gender-neutral-silhouette-vector-600nw-2526512481.jpg")
+  backgroundUrl String? @default("https://img.freepik.com/premium-photo/white-black-blurry-art-background_678264-850.jpg")
+  bio                   String?
+  socialLinks           Json?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
 }
 
 enum Role {

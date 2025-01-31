@@ -26,6 +26,13 @@ export class ProfileMutationService {
     );
   }
 
+  async setBackgroundUrl(userId: string, backgroundUrl: string): Promise<Profile> {
+    this.logger.log(`Setting background URL for user ${userId}`);
+    return firstValueFrom(
+      this.profileClient.send({ cmd: 'profile-set-background' }, { userId, backgroundUrl })
+    );
+  }
+
   async deleteProfile(userId: string): Promise<boolean> {
     this.logger.log(`Deleting profile for user ${userId}`);
     return firstValueFrom(

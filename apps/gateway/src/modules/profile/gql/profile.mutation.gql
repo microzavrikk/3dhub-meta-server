@@ -8,6 +8,7 @@ input ProfileInput {
   bio: String
   socialLinks: JSON
   avatarUrl: String
+  backgroundUrl: String
 }
 
 scalar JSON

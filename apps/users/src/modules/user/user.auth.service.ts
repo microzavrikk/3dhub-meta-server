@@ -6,50 +6,63 @@ import { UserRegisterDto } from './models/dto/user-register.dto';
 import { UserLoginDto } from './models/dto/user.login.dto';
 import { UserRepository } from './user.repository';
 import { RpcException } from '@nestjs/microservices';
-
+import { ProfileService } from '../profile/profile.service';
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 @Injectable()
 export class UserAuthService {
     private readonly logger = new Logger(UserAuthService.name);
 
-    constructor(private readonly userRepository: UserRepository) {}
+    constructor(
+        private readonly userRepository: UserRepository,
+        private readonly profileService: ProfileService
+    ) {}
 
     async register(data: UserRegisterDto) {
         try {
-            // Проверяем существование email
             const existingUserEmail = await this.userRepository.findUserByEmail(data.email);
             if (existingUserEmail) {
                 this.logger.error(`Registration failed: Email ${data.email} already registered`);
                 throw new RpcException('Email already registered');
             }
 
-            // Проверяем существование username
             const existingUserName = await this.userRepository.findUserByUsername(data.username);
             if (existingUserName) {
                 this.logger.error(`Registration failed: Username ${data.username} already taken`);
                 throw new RpcException('Username already taken');
             }
 
-            // Хешируем пароль
             const salt = await bcrypt.genSalt();
             const hashedPassword = await bcrypt.hash(data.password, salt);
 
-            // Создаем пользователя
             const user = await this.userRepository.createUser({
                 ...data,
                 password: hashedPassword
             });
-            
+
             if (!user) {
                 throw new RpcException('Failed to create user');
             }
+
+            try {
+                const profile = await this.profileService.createProfile(user.id);
+                this.logger.log(`Profile created for user ${user.id}`);
+                
+                if (!profile) {
+                    this.logger.error(`Failed to create profile for user ${user.id}`);
+                    await this.userRepository.deleteUser(user.id);
+                    throw new RpcException('Failed to create user profile');
+                }
+            } catch (profileError: any) {
+                this.logger.error(`Failed to create profile: ${profileError.message}`);
+                await this.userRepository.deleteUser(user.id);
+                throw new RpcException('Failed to create user profile');
+            }
             
-            this.logger.log(`User successfully registered: ${user.email}`);
+            this.logger.log(`User successfully registered with profile: ${user.email}`);
             return user;
 
         } catch (error: any) {
-            // Если ошибка уже является RpcException, просто пробрасываем её дальше
             if (error instanceof RpcException) {
                 throw error;
             }

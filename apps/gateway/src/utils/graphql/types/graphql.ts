@@ -56,6 +56,7 @@ export class ProfileInput {
     bio?: Nullable<string>;
     socialLinks?: Nullable<JSON>;
     avatarUrl?: Nullable<string>;
+    backgroundUrl?: Nullable<string>;
 }
 
 export class SearchUserInput {
@@ -199,6 +200,7 @@ export class Profile {
     id: string;
     userId: string;
     avatarUrl?: Nullable<string>;
+    backgroundUrl?: Nullable<string>;
     bio?: Nullable<string>;
     socialLinks?: Nullable<JSON>;
     createdAt: DateTime;
