@@ -35,6 +35,8 @@ model Profile {
   avatarUrl   String?
   bio         String?
   socialLinks Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 enum Role {
