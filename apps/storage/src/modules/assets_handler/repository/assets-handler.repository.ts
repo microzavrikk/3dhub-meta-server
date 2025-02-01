@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../../../utils/prisma/prisma.service';
 import { Prisma, ThirdModel } from '../../../utils/prisma/types';
 import { CreateAssetDto, UpdateAssetDto } from '../types';
+import { AssetOutput } from 'apps/gateway/src/utils/graphql/types/graphql';
 
 
 
@@ -19,6 +20,27 @@ export class AssetsHandlerRepository {
         }
       }
     });
+  }
+
+  async getAllFilesInDatabase(): Promise<AssetOutput[]> {
+    const files = await this.prisma.thirdModel.findMany();
+    return files.map(file => ({
+        ...file,
+        file: [file.fileKey],
+        titleName: file.  name,
+        category: file.category || 'default-category',
+        fileSize: file.fileSize || 0,
+        fileType: file.fileType || 'application/octet-stream',
+        uploadDate: file.uploadDate || new Date(),
+        publicAccess: file.publicAccess || false,
+        thumbnailUrl: file.thumbnailUrl || null,
+        metadata: file.metadata || null,
+        updatedAt: file.updatedAt.toISOString()
+    }));
+  }
+    
+  async getAllFileNamesInDatabase(): Promise<string[]> {
+    return await this.prisma.thirdModel.findMany({ select: { name: true } }).then(result => result.map(item => item.name));
   }
 
   async createAsset(data: CreateAssetDto): Promise<any> {

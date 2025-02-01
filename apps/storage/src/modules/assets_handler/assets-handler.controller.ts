@@ -7,6 +7,7 @@ import { GetFileByUserIdDto } from '../../../../gateway/src/modules/assets-stora
 import { GetFileByUserIdAndFileNameDto } from '../../../../gateway/src/modules/assets-storage/dto/assets-get-by-filename.dto';
 import { AssetInfo } from '../../../../gateway/src/modules/assets-storage/assets-storage.types';
 import { ThirdModel } from '../../utils/prisma/types';
+import { AssetOutput } from 'apps/gateway/src/utils/graphql/types/graphql';
 
 @Controller()
 export class AssetsHandlerController {
@@ -89,6 +90,26 @@ export class AssetsHandlerController {
             return await this.assetsHandlerService.getAllCategoryInS3();
         } catch (error: any) {
             this.logger.error(`Failed to get all category in s3: ${error.message}`);
+            return [];
+        }
+    }
+
+    @MessagePattern({ cmd: 'get-all-files-in-database' })
+    async getAllFilesInDatabase(): Promise<AssetOutput[]> {
+        try {
+            return await this.assetsHandlerService.getAllFilesInDatabase();
+        } catch (error: any) {
+            this.logger.error(`Failed to get all files in database: ${error.message}`);
+            return [];
+        }
+    }
+
+    @MessagePattern({ cmd: 'get-all-file-names-in-database' })
+    async getAllFileNamesInDatabase(): Promise<string[]> {
+        try {
+            return await this.assetsHandlerService.getAllFileNamesInDatabase();
+        } catch (error: any) {
+            this.logger.error(`Failed to get all file names in database: ${error.message}`);
             return [];
         }
     }

@@ -4,7 +4,7 @@ import * as AWS from 'aws-sdk';
 import { GetFileByUserIdDto } from "../dto/assets-get-by-id.dto"
 import { GetFileByUserIdAndFileNameDto } from "../dto/assets-get-by-filename.dto"
 import { AssetInfo } from "../assets-storage.types"
-
+import { AssetOutput } from "../../../utils/graphql/types/graphql";
 @Injectable()
 export class AssetsStorageQueryService {
   private readonly logger = new Logger(AssetsStorageQueryService.name);
@@ -56,5 +56,17 @@ export class AssetsStorageQueryService {
       this.logger.error(`Failed to get file by userId and fileName: ${error.message}`);
       throw new Error(`Failed to get file by userId and fileName: ${error.message}`);
     }
+  }
+
+  async getAllFilesInDatabase(): Promise<AssetOutput[]> {
+    this.logger.log(`Getting all files in database`);
+    const fileData = await this.client.send({ cmd: 'get-all-files-in-database' }, {}).toPromise();
+    return fileData;
+  }
+
+  async getAllFileNamesInDatabase(): Promise<string[]> {
+    this.logger.log(`Getting all file names in database`);
+    const fileData = await this.client.send({ cmd: 'get-all-file-names-in-database' }, {}).toPromise();
+    return fileData;
   }
 }

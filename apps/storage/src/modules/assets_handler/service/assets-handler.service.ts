@@ -8,6 +8,7 @@ import * as AWS from 'aws-sdk';
 import { GetFileByUserIdDto } from '../../../../../gateway/src/modules/assets-storage/dto/assets-get-by-id.dto';
 import { GetFileByUserIdAndFileNameDto } from '../../../../../gateway/src/modules/assets-storage/dto/assets-get-by-filename.dto';
 import { AssetInfo } from 'apps/gateway/src/modules/assets-storage/assets-storage.types';
+import { AssetOutput } from 'apps/gateway/src/utils/graphql/types/graphql';
 
 @Injectable()
 export class AssetsHandlerService {
@@ -19,6 +20,14 @@ export class AssetsHandlerService {
     private readonly configService: ConfigService,
     @Inject('ASSETS_HANDLER_SERVICE') private readonly client: ClientProxy
   ) {}
+
+  async getAllFilesInDatabase(): Promise<AssetOutput[]> {
+    return this.assetsHandlerRepository.getAllFilesInDatabase();
+  }
+
+  async getAllFileNamesInDatabase(): Promise<string[]> {
+    return this.assetsHandlerRepository.getAllFileNamesInDatabase();
+  }
 
   async getModelsCountByName(query: string): Promise<number> {
     const models = await this.assetsHandlerRepository.searchModels(query);

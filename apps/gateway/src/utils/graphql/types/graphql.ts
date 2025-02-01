@@ -137,6 +137,23 @@ export class AssetsStorageMutation {
 export class AssetsStorageQuery {
     getFileByUserId?: FileOutput;
     getFileByUserIdAndFileName?: FileOutput;
+    getFileByFileId?: AssetOutput;
+    getAllFilesInDatabase: AssetOutput[];
+    getAllFileNamesInDatabase: string[];
+}
+
+export class AssetOutput {
+    id: string;
+    file: string[];
+    titleName: string;
+    name: string;
+    description?: Nullable<string>;
+    category: string;
+    tags: string[];
+    ownerId: string;
+    publicAccess?: Nullable<boolean>;
+    createdAt?: Nullable<string>;
+    updatedAt?: Nullable<string>;
 }
 
 export class Asset {

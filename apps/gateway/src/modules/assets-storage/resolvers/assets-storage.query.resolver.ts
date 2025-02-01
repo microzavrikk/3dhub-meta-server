@@ -5,6 +5,7 @@ import { FileOutput } from "../../../utils/graphql/types/graphql";
 import { AssetsStorageQueryService } from "../service/assets-storage.query.service";
 import { GetFileByUserIdDto } from "../dto/assets-get-by-id.dto"
 import { GetFileByUserIdAndFileNameDto } from "../dto/assets-get-by-filename.dto"
+import { AssetOutput } from "../../../utils/graphql/types/graphql";
 
 @Resolver(() => AssetsStorageQuery)
 export class AssetsStorageQueryResolver {
@@ -36,5 +37,17 @@ export class AssetsStorageQueryResolver {
         return {
             Body: fileData.Body?.toString() || '',
         }
+    }
+
+    @ResolveField('getAllFilesInDatabase')
+    async getAllFilesInDatabase(): Promise<AssetOutput[]> {
+        const fileData = await this.assetsStorageQueryService.getAllFilesInDatabase();
+        return fileData;
+    }
+
+    @ResolveField('getAllFileNamesInDatabase')
+    async getAllFileNamesInDatabase(): Promise<string[]> {
+        const fileData = await this.assetsStorageQueryService.getAllFileNamesInDatabase();
+        return fileData;
     }
 }

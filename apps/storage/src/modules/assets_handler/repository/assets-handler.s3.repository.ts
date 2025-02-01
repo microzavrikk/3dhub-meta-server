@@ -3,6 +3,7 @@ import * as AWS from 'aws-sdk';
 import { ConfigService } from '@nestjs/config';
 import { CreateAssetDto } from '../types';
 import { AssetInfo } from 'apps/gateway/src/modules/assets-storage/assets-storage.types';
+import { AssetOutput } from 'apps/gateway/src/utils/graphql/types/graphql';
 
 @Injectable()
 export class AssetsHandlerS3Repository {
