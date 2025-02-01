@@ -7,7 +7,8 @@ import { UserRegisterDto } from "./models/dto/user-register.dto";
 import { UserAuthService } from "./user.auth.service";
 import { User } from "../../utils/prisma/types";
 import { Logger } from "@nestjs/common";
-
+import { UserSearchResult } from "apps/gateway/src/utils/graphql/types/graphql";
+import { ProfileService } from "../profile/profile.service";
 @Controller()
 export class UserController {
     private readonly logger = new Logger(UserController.name);
@@ -15,6 +16,7 @@ export class UserController {
     constructor(
         private readonly userService: UserService,
         private readonly userAuthService: UserAuthService,
+        private readonly profileService: ProfileService,
     ) {}
 
     @MessagePattern({ cmd: 'user-register' })
@@ -43,9 +45,16 @@ export class UserController {
     ///////////////////////////////////////////////////////////////////////////////////
 
     @MessagePattern({ cmd: 'user-search' })
-    async search(query: string): Promise<User[]> {
+    async search(query: string): Promise<UserSearchResult[]> {
         this.logger.log(`Received request to search users with query: ${query}`);
-        return this.userService.searchUsers(query);
+        const users = await this.userService.searchUsers(query);
+        const avatarUrls = await Promise.all(users.map((user) => this.profileService.getAvatarUrl(user.id)));
+        const searchResults = users.map((user, index) => ({
+            username: user.username,
+            avatarUrl: avatarUrls[index],
+        }));
+        this.logger.log(`Found ${searchResults.length} users`);
+        return searchResults;
     }
 
     @MessagePattern({ cmd: 'user-find-by-username' })

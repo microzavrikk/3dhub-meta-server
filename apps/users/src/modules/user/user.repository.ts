@@ -14,22 +14,11 @@ export class UserRepository {
 
     constructor(private readonly prisma: PrismaService, 
         @Inject ('PROFILE_SERVICE') private readonly client: ClientProxy,
-        private readonly userService: UserService
     ) {}
 
     async searchUsers(query: string): Promise<User[]> {
-        this.logger.log(`Searching for users with query: ${query}`);
-        
-        const where: Prisma.UserWhereInput = {
-            OR: [
-                { username: { contains: query } },
-                { email: { contains: query } },
-            ],
-        };
-
-        const users = await this.prisma.user.findMany({ where });
-
-        this.logger.log(`Found ${users.length} users`);
+        const users = await this.prisma.user.findMany({ where: { username: { contains: query } } });
+        return users;
     }
 
     async findUserByUsername(username: string): Promise<User | null> {

@@ -21,6 +21,11 @@ export class ProfileService {
         return profile;
     }
 
+    async getAvatarUrl(userId: string): Promise<string | null> {
+        const profile = await this.profileRepository.getProfile(userId);
+        return profile?.avatarUrl || null;
+    }
+
     async getProfile(userId: string): Promise<Profile | null> {
         try {
             return await this.profileRepository.getProfile(userId);
