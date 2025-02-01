@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { CreateAssetDto } from '../types';
 import { AssetInfo } from 'apps/gateway/src/modules/assets-storage/assets-storage.types';
 import { AssetOutput } from 'apps/gateway/src/utils/graphql/types/graphql';
+import { AssetsHandlerRepository } from './assets-handler.repository';
 
 @Injectable()
 export class AssetsHandlerS3Repository {
@@ -11,13 +12,16 @@ export class AssetsHandlerS3Repository {
   private readonly s3: AWS.S3;
   private readonly bucketName: string;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly assetsHandlerRepository: AssetsHandlerRepository,
+    private readonly configService: ConfigService) {
     this.s3 = new AWS.S3({
       accessKeyId: this.configService.get<string>('AWS_ACCESS_KEY_ID'),
       secretAccessKey: this.configService.get<string>('AWS_SECRET_ACCESS_KEY'),
       region: this.configService.get<string>('AWS_S3_REGION'),
       signatureVersion: 'v4'
     });
+    
     this.bucketName = this.configService.get<string>('AWS_BUCKET_NAME') || 'default-bucket-name';    
     const corsParams = {
       Bucket: this.bucketName,
@@ -148,8 +152,6 @@ export class AssetsHandlerS3Repository {
 
       this.logger.log(`Found ${userAssets.length} assets for user: ${username}`);
       
-      this.logger.log(userAssets);
-
       const assets = await Promise.all(userAssets.map(async asset => {
         const fileData = await this.s3.getObject({
           Bucket: this.bucketName,
@@ -163,7 +165,11 @@ export class AssetsHandlerS3Repository {
           ResponseContentDisposition: 'inline'
         });
 
+        this.logger.log(asset.Key?.split('/')[asset.Key?.split('/').length - 2] || '',);
+
         return {
+
+          id: await this.assetsHandlerRepository.getAssetIdByFileName(asset.Key?.split('/')[asset.Key?.split('/').length - 2] || ''),
           titleName: asset.Key?.split('/')[asset.Key?.split('/').length - 2] || '',
           name: asset.Key?.split('/').pop() || '',
           tags: [], 
@@ -178,6 +184,8 @@ export class AssetsHandlerS3Repository {
           previewUrl: previewUrl 
         };
       }));
+
+      this.logger.log("assets", assets);
 
       return assets;
 

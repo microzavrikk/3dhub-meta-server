@@ -31,6 +31,7 @@ export class AssetsStorageQueryService {
       const assets = await this.client.send({ cmd: 'get-assets-by-user' }, userId).toPromise();
       
       const assetInfos: AssetInfo[] = assets.map((asset: any) => ({
+        id: asset.id || '',
         titleName: asset.titleName || '',
         name: asset.name || '',
         tags: asset.tags || [],

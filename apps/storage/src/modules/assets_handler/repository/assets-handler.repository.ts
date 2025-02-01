@@ -73,6 +73,11 @@ export class AssetsHandlerRepository {
     }
   }
 
+  async getAssetIdByFileName(fileName: string): Promise<any> {
+    return (await this.prisma.thirdModel.findFirst({ where: { name: fileName }, select: { id: true } }))?.id;
+    
+  }
+
   async updateAsset(id: string, data: UpdateAssetDto): Promise<any> {
     try {
       const asset = await this.prisma.thirdModel.update({

@@ -1,4 +1,5 @@
 export interface AssetInfo {
+    id: string;
     titleName: string;
     name: string;
     tags: string[];
