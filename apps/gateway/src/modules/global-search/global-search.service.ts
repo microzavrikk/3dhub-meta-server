@@ -1,6 +1,7 @@
 import { Injectable, Logger, Inject } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { User } from '../../utils/graphql/types/graphql';
+import { UserSearchResult } from 'apps/gateway/src/utils/graphql/types/graphql';
 
 @Injectable()
 export class GlobalSearchService {

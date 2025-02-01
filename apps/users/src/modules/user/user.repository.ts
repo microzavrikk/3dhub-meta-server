@@ -3,21 +3,33 @@ import { PrismaService } from "../../utils/prisma/prisma.service";
 import { User, Prisma } from "../../utils/prisma/types";
 import { UpdateUserDto } from "./models/dto/user-update.dto";
 import { Logger } from "@nestjs/common";
+import { UserSearchResult } from "apps/gateway/src/utils/graphql/types/graphql";
+import { Inject } from "@nestjs/common";
+import { ClientProxy } from "@nestjs/microservices";
+import { UserService } from "./user.service";
 
 @Injectable()
 export class UserRepository {
     private readonly logger = new Logger(UserRepository.name);
 
-    constructor(private readonly prisma: PrismaService) {}
+    constructor(private readonly prisma: PrismaService, 
+        @Inject ('PROFILE_SERVICE') private readonly client: ClientProxy,
+        private readonly userService: UserService
+    ) {}
 
     async searchUsers(query: string): Promise<User[]> {
-        return await this.prisma.user.findMany({
-            where: {
-                username: {
-                    contains: query
-                }
-            }
-        });
+        this.logger.log(`Searching for users with query: ${query}`);
+        
+        const where: Prisma.UserWhereInput = {
+            OR: [
+                { username: { contains: query } },
+                { email: { contains: query } },
+            ],
+        };
+
+        const users = await this.prisma.user.findMany({ where });
+
+        this.logger.log(`Found ${users.length} users`);
     }
 
     async findUserByUsername(username: string): Promise<User | null> {
