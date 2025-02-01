@@ -3,7 +3,7 @@
     "target": "es2016",
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "module": "commonjs",
+    "module": "commonjs", 
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
@@ -12,6 +12,12 @@
     "typeRoots": ["./node_modules/@types", "./src/types"],
     "baseUrl": "./",
     "paths": {
+      "@libs/performance": [
+        "libs/performance/src"
+      ],
+      "@libs/performance/*": [
+        "libs/performance/src/*"
+      ],
       "@app/health-check": [
         "libs/health-check/src"
       ],
