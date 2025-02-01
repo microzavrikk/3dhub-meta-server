@@ -145,6 +145,7 @@ export class AssetsStorageQuery {
 export class AssetOutput {
     id: string;
     file: string[];
+    awsLocation: string;
     titleName: string;
     name: string;
     description?: Nullable<string>;

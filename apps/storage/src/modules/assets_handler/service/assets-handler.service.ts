@@ -67,7 +67,9 @@ export class AssetsHandlerService {
       const fileKey = `${data.newAsset.category}/${data.newAsset.username}/${data.newAsset.name}/${data.file.originalname}`;
       this.logger.log(`Generated fileKey: ${fileKey}`);
 
-      await this.assetsHandlerS3Repository.uploadFile(data, fileKey, file);
+      const awsLink = await this.assetsHandlerS3Repository.uploadFile(data, fileKey, file);
+
+      this.logger.log(`AWS Link: ${JSON.stringify(awsLink, null, 2)}`);
 
       const assetData = { 
         ...data,
@@ -77,8 +79,7 @@ export class AssetsHandlerService {
         }
       };
 
-      // Сохранение данных в репозитории
-      return this.assetsHandlerRepository.createAsset(assetData);
+      return this.assetsHandlerRepository.createAsset(assetData, awsLink.Location);
     } catch (error: any) {
       this.logger.error(`Failed to create asset: ${error.message}`);
       throw error;

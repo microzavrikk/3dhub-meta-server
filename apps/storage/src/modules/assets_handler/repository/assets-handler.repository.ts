@@ -27,7 +27,8 @@ export class AssetsHandlerRepository {
     return files.map(file => ({
         ...file,
         file: [file.fileKey],
-        titleName: file.  name,
+        titleName: file.name,
+        awsLocation: file.awsLocation || '',
         category: file.category || 'default-category',
         fileSize: file.fileSize || 0,
         fileType: file.fileType || 'application/octet-stream',
@@ -43,12 +44,13 @@ export class AssetsHandlerRepository {
     return await this.prisma.thirdModel.findMany({ select: { name: true } }).then(result => result.map(item => item.name));
   }
 
-  async createAsset(data: CreateAssetDto): Promise<any> {
+  async createAsset(data: CreateAssetDto, awsLink: string): Promise<any> {
     try {
       const asset = await this.prisma.thirdModel.create({
         data: {
           name: data.newAsset.name,
           description: data.newAsset.description,
+          awsLocation: awsLink,
           category: data.newAsset.category,
           fileKey: data.newAsset.fileKey,
           bucketName: data.newAsset.bucketName || 'default-bucket-name', 
@@ -57,7 +59,7 @@ export class AssetsHandlerRepository {
           tags: Array.isArray(data.newAsset.tags) 
             ? data.newAsset.tags.filter((tag): tag is string => !!tag)
             : [data.newAsset.tags].filter((tag): tag is string => !!tag),
-          ownerId: data.newAsset.ownerId || 'default-owner', 
+          ownerId: data.newAsset.username || 'undefined-owner', 
           publicAccess: data.newAsset.publicAccess === 'true' 
             || data.newAsset.publicAccess === true 
             || false,

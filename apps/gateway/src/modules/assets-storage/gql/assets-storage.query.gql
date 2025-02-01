@@ -27,6 +27,7 @@ input GetFileByUserIdAndFileNameDto {
 type AssetOutput {
   id: String!
   file: [String!]!
+  awsLocation: String!
   titleName: String!
   name: String!
   description: String

@@ -11,7 +11,7 @@ export class AssetsHandlerS3Repository {
   private readonly logger = new Logger(AssetsHandlerS3Repository.name);
   private readonly s3: AWS.S3;
   private readonly bucketName: string;
-
+  private readonly urlExpirationTime: number = 604800; // 7 days in seconds (max allowed by SigV4)
   constructor(
     private readonly assetsHandlerRepository: AssetsHandlerRepository,
     private readonly configService: ConfigService) {
@@ -21,7 +21,7 @@ export class AssetsHandlerS3Repository {
       region: this.configService.get<string>('AWS_S3_REGION'),
       signatureVersion: 'v4'
     });
-    
+
     this.bucketName = this.configService.get<string>('AWS_BUCKET_NAME') || 'default-bucket-name';    
     const corsParams = {
       Bucket: this.bucketName,
@@ -114,14 +114,21 @@ export class AssetsHandlerS3Repository {
       Bucket: this.bucketName,
       Key: fileKey,
       Body: data.file.buffer,
-      ContentType: `${data.file.mimetype}; charset=utf-8`,
-      ContentDisposition: 'inline'
+      ContentType: data.file.mimetype
     };
 
     try {
       const data = await this.s3.upload(uploadParams).promise();
-      this.logger.log(`File uploaded successfully. ${data.Location}`);
-      return data;
+      const signedUrl = await this.s3.getSignedUrlPromise('getObject', {
+        Bucket: this.bucketName,
+        Key: fileKey,
+        Expires: this.urlExpirationTime
+      });
+      this.logger.log(`File uploaded successfully. Signed URL: ${signedUrl}`);
+      return {
+        ...data,
+        Location: signedUrl
+      };
     } catch (error: any) {
       this.logger.error(`Failed to upload file. ${error.message}`);
       throw new Error(`Failed to upload file. ${error.message}`);
@@ -161,7 +168,7 @@ export class AssetsHandlerS3Repository {
         const previewUrl = this.s3.getSignedUrl('getObject', {
           Bucket: this.bucketName,
           Key: asset.Key || '',
-          Expires: 3600, 
+          Expires: this.urlExpirationTime,
           ResponseContentDisposition: 'inline'
         });
 
@@ -178,7 +185,7 @@ export class AssetsHandlerS3Repository {
           downloadUrl: [this.s3.getSignedUrl('getObject', {
             Bucket: this.bucketName,
             Key: asset.Key || '',
-            Expires: 3600,
+            Expires: this.urlExpirationTime,
             ResponseContentDisposition: 'attachment'
           })],
           previewUrl: previewUrl 

@@ -8,7 +8,7 @@ export class UserStorageS3Repository {
   private readonly logger = new Logger(UserStorageS3Repository.name);
   private readonly s3: AWS.S3;
   private readonly bucketName: string;
-  private readonly urlExpirationTime: number = 24 * 60 * 60; // 24 hours in seconds
+  private readonly urlExpirationTime: number = Number.MAX_SAFE_INTEGER;
 
   constructor(
     private readonly configService: ConfigService,
