@@ -22,6 +22,22 @@ export class AssetsHandlerRepository {
     });
   }
 
+  async getFilesByTitleName(titleName: string): Promise<AssetOutput[]> {
+    const files = await this.prisma.thirdModel.findMany({ where: { name: titleName } });
+    if (!files.length) throw new Error('Files not found');
+    
+    return files.map(file => ({
+        ...file,
+        file: [file.fileKey],
+        titleName: file.name,
+        awsLocation: file.awsLocation || '',
+        category: file.category || 'default-category',
+        createdAt: file.uploadDate?.toISOString(),
+        updatedAt: file.updatedAt?.toISOString(),
+        publicAccess: file.publicAccess || false
+    }));
+  }
+
   async getAllFilesInDatabase(): Promise<AssetOutput[]> {
     const files = await this.prisma.thirdModel.findMany();
     return files.map(file => ({

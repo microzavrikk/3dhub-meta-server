@@ -21,6 +21,13 @@ export class AssetsHandlerService {
     @Inject('ASSETS_HANDLER_SERVICE') private readonly client: ClientProxy
   ) {}
 
+  async getFilesByTitleName(titleName: string): Promise<AssetOutput[]> {
+    this.logger.log(`Getting file by titleName: ${titleName}`);
+    const fileData = await this.assetsHandlerRepository.getFilesByTitleName(titleName);
+    this.logger.log(`File data: ${JSON.stringify(fileData, null, 2)}`);
+    return fileData;
+  }
+
   async getAllFilesInDatabase(): Promise<AssetOutput[]> {
     return this.assetsHandlerRepository.getAllFilesInDatabase();
   }

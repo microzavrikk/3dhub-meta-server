@@ -28,6 +28,15 @@ export class AssetsStorageQueryResolver {
         }
     }
 
+    @ResolveField('getFileByTitleName')
+    async getFileByTitleName(
+        @Args('titleName') titleName: string
+    ): Promise<AssetOutput[]> {
+        this.logger.log(`Getting file by titleName: ${titleName}`);
+        const fileData = await this.assetsStorageQueryService.getFileByTitleName(titleName);
+        return fileData;
+    }
+
     @ResolveField('getFileByUserIdAndFileName')
     async getFileByUserIdAndFileName(
         @Args('input') input: GetFileByUserIdAndFileNameDto

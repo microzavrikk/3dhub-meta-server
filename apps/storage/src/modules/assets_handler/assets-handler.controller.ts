@@ -94,6 +94,11 @@ export class AssetsHandlerController {
         }
     }
 
+    @MessagePattern({ cmd: 'get-file-by-title-name' })
+    async getFileByTitleName(titleName: string): Promise<AssetOutput[]> {
+        return await this.assetsHandlerService.getFilesByTitleName(titleName);
+    }
+
     @MessagePattern({ cmd: 'get-all-files-in-database' })
     async getAllFilesInDatabase(): Promise<AssetOutput[]> {
         try {

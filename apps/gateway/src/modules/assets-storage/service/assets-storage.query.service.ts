@@ -13,6 +13,13 @@ export class AssetsStorageQueryService {
     @Inject('ASSETS_HANDLER_SERVICE') private readonly client: ClientProxy
   ) {}
 
+  async getFileByTitleName(titleName: string): Promise<AssetOutput[]> {
+    this.logger.log(`Getting file by titleName: ${titleName}`);
+    const fileData = await this.client.send({ cmd: 'get-file-by-title-name' }, titleName).toPromise();
+    this.logger.log(`File data: ${JSON.stringify(fileData, null, 2)}`);
+    return fileData;
+  }
+
   async getFileByUserId(input: GetFileByUserIdDto): Promise<AWS.S3.GetObjectOutput> {
     this.logger.log(`Getting file by userId: ${input.userId} in category: ${input.category}`);
 

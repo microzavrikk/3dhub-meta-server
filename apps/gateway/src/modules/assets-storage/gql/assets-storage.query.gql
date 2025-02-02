@@ -11,6 +11,7 @@ type AssetsStorageQuery {
   getFileByFileId(id: String!): AssetOutput!
   getAllFilesInDatabase: [AssetOutput!]!
   getAllFileNamesInDatabase: [String!]!
+  getFileByTitleName(titleName: String!): [AssetOutput!]! # Example query: query { AssetsQuery { getFileByTitleName(titleName: "example-title") { id file awsLocation titleName name description category tags ownerId publicAccess createdAt updatedAt } } }
 }
 
 input GetFileByUserIdDto {
