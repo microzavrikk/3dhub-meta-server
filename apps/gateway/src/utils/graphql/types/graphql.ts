@@ -11,6 +11,7 @@
 export class CreateAssetInput {
     file: Upload;
     name: string;
+    price: number;
     titleName: string;
     description?: Nullable<string>;
     category: string;
@@ -21,6 +22,7 @@ export class CreateAssetInput {
 
 export class UpdateAssetInput {
     id: string;
+    price: number;
     name?: Nullable<string>;
     titleName?: Nullable<string>;
     description?: Nullable<string>;
@@ -108,6 +110,8 @@ export abstract class IQuery {
     abstract getProfile(userId: string): Nullable<Profile> | Promise<Nullable<Profile>>;
 
     abstract SearchUser(): Nullable<SearchUserQuery> | Promise<Nullable<SearchUserQuery>>;
+
+    abstract getDefaultFilters(): DefaultFilters | Promise<DefaultFilters>;
 }
 
 export abstract class IMutation {
@@ -146,6 +150,7 @@ export class AssetsStorageQuery {
 export class AssetOutput {
     id: string;
     file: string[];
+    price: number;
     awsLocation: string;
     titleName: string;
     name: string;
@@ -161,6 +166,7 @@ export class AssetOutput {
 export class Asset {
     id: string;
     file: Upload;
+    price: number;
     titleName: string;
     name: string;
     description?: Nullable<string>;
@@ -236,6 +242,37 @@ export class SearchUserQuery {
     findUserByEmail?: Nullable<User>;
     findUserByUsername?: Nullable<User>;
     findAllUsers?: Nullable<User[]>;
+}
+
+export class DefaultFilters {
+    categories: CategoryFilter[];
+    priceRange: PriceRange;
+    formats: FormatFilter[];
+    tags: string[];
+    sortOptions: SortOption[];
+    assetName: string;
+    totalCount: number;
+}
+
+export class CategoryFilter {
+    id: string;
+    name: string;
+    count: number;
+}
+
+export class FormatFilter {
+    format: string;
+    count: number;
+}
+
+export class PriceRange {
+    min: number;
+    max: number;
+}
+
+export class SortOption {
+    value: string;
+    label: string;
 }
 
 export type JSON = any;

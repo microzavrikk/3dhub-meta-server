@@ -89,6 +89,7 @@ export class AssetsStorageMutationController {
             size: file.size,
             filePath: categoryFilePath,
             publicAccess: createAssetDto.publicAccess || false,
+            price: createAssetDto.price || 0,
           };
 
           const result = await this.assetsStorageService.createAsset(createAssetInput, fullFileObject);

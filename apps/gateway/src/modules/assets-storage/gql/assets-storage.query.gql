@@ -28,6 +28,7 @@ input GetFileByUserIdAndFileNameDto {
 type AssetOutput {
   id: String!
   file: [String!]!
+  price: Float!
   awsLocation: String!
   titleName: String!
   name: String!
@@ -43,6 +44,7 @@ type AssetOutput {
 type Asset {
   id: String!
   file: Upload!
+  price: Float!
   titleName: String!
   name: String!
   description: String

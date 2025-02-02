@@ -29,4 +29,5 @@ model ThirdModel {
   publicAccess   Boolean  @default(false) // Indicates if the model is publicly accessible
   thumbnailUrl   String?  // Optional URL for the model's thumbnail
   metadata       Json?    // Additional metadata about the model (e.g., dimensions, materials)
+  price          Float    // Price of the 3D model
 }

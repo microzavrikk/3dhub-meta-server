@@ -44,6 +44,7 @@ export class AssetsStorageService {
     const newAsset: Asset = {
       id: this.generateId(),
       ...data,
+      price: data.price || 0,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       publicAccess: data.publicAccess ?? false,

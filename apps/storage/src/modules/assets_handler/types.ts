@@ -34,6 +34,7 @@ export interface CreateAssetDto {
     publicAccess: boolean | string;
     thumbnailUrl?: string;
     metadata?: any;
+    price: number;
   };
 }
 

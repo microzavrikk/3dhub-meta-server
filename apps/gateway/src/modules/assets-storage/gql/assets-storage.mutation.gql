@@ -14,6 +14,7 @@ type AssetsStorageMutation {
 input CreateAssetInput {
   file: Upload!
   name: String!
+  price: Float!
   titleName: String!
   description: String
   category: String!
@@ -24,6 +25,7 @@ input CreateAssetInput {
 
 input UpdateAssetInput {
   id: String!
+  price: Float!
   name: String
   titleName: String
   description: String

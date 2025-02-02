@@ -1,0 +1,34 @@
+type Query {
+  getDefaultFilters: DefaultFilters!
+}
+
+type DefaultFilters {
+  categories: [CategoryFilter!]!
+  priceRange: PriceRange!
+  formats: [FormatFilter!]!
+  tags: [String!]!
+  sortOptions: [SortOption!]!
+  assetName: String!
+  totalCount: Int!
+}
+
+type CategoryFilter {
+  id: ID!
+  name: String!
+  count: Int!
+}
+
+type FormatFilter {
+  format: String!
+  count: Int!
+}
+
+type PriceRange {
+  min: Float!
+  max: Float!
+}
+
+type SortOption {
+  value: String!
+  label: String!
+}

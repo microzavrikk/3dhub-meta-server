@@ -65,19 +65,20 @@ export class AssetsHandlerRepository {
       const asset = await this.prisma.thirdModel.create({
         data: {
           name: data.newAsset.name,
+          price: parseFloat(data.newAsset.price?.toString() || '0'),
           description: data.newAsset.description,
           awsLocation: awsLink,
           category: data.newAsset.category,
           fileKey: data.newAsset.fileKey,
-          bucketName: data.newAsset.bucketName || 'default-bucket-name', 
+          bucketName: data.newAsset.bucketName || 'default-bucket-name',
           fileSize: isNaN(parseInt(String(data.newAsset.fileSize))) ? 0 : parseInt(String(data.newAsset.fileSize)),
           fileType: data.newAsset.fileType || 'application/octet-stream',
-          tags: Array.isArray(data.newAsset.tags) 
+          tags: Array.isArray(data.newAsset.tags)
             ? data.newAsset.tags.filter((tag): tag is string => !!tag)
             : [data.newAsset.tags].filter((tag): tag is string => !!tag),
-          ownerId: data.newAsset.username || 'undefined-owner', 
-          publicAccess: data.newAsset.publicAccess === 'true' 
-            || data.newAsset.publicAccess === true 
+          ownerId: data.newAsset.username || 'undefined-owner',
+          publicAccess: data.newAsset.publicAccess === 'true'
+            || data.newAsset.publicAccess === true
             || false,
           thumbnailUrl: data.newAsset.thumbnailUrl,
           metadata: data.newAsset.metadata,

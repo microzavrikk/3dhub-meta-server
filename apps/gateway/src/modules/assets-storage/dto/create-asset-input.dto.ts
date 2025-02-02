@@ -26,4 +26,7 @@ export class CreateAssetDto {
   @IsOptional()
   @ApiProperty({ required: false })
   publicAccess?: boolean;
+
+  @ApiProperty()
+  price: number;
 }

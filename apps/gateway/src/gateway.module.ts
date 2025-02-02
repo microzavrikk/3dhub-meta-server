@@ -12,9 +12,10 @@ import { SearchUserModule } from './modules/search-user/search-user.module';
 import { UserAvatarModule } from './modules/user-avatar/user-avatar.module';
 import { GlobalSearchModule } from './modules/global-search/global-search.module';
 import { ProfileModule } from './modules/profile/profile.module';
-
+import { SearchGenerateModule } from './modules/search_models_params_gen/search_generate.module';
 @Module({
   imports: [
+    SearchGenerateModule,
     GraphqlModule,
     SessionModule,
     AuthModule,
