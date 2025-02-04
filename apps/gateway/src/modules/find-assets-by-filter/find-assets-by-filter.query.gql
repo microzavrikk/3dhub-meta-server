@@ -1,0 +1,40 @@
+type Query {
+  findAssetsByFilter(input: AssetsFilterInput!): AssetsFilterOutput!
+}
+
+input AssetsFilterInput {
+  categories: [String!]
+  priceRange: PriceRangeInput
+  formats: [String!]
+  tags: [String!]
+  sortBy: String
+  assetName: String
+  page: Int
+  limit: Int
+}
+
+input PriceRangeInput {
+  min: Float
+  max: Float
+}
+
+type AssetsFilterOutput {
+  assets: [AssetOutput!]!
+  totalCount: Int!
+}
+
+type AssetOutput {
+  id: String!
+  file: [String!]!
+  price: Float!
+  awsLocation: String!
+  titleName: String!
+  name: String!
+  description: String
+  category: String!
+  tags: [String!]!
+  ownerId: String!
+  publicAccess: Boolean
+  createdAt: String
+  updatedAt: String
+}

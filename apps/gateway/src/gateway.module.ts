@@ -13,6 +13,7 @@ import { UserAvatarModule } from './modules/user-avatar/user-avatar.module';
 import { GlobalSearchModule } from './modules/global-search/global-search.module';
 import { ProfileModule } from './modules/profile/profile.module';
 import { SearchGenerateModule } from './modules/search_models_params_gen/search_generate.module';
+import { FindAssetsByFilterModule } from './modules/find-assets-by-filter/find-assets-by-filter.module';
 @Module({
   imports: [
     SearchGenerateModule,
@@ -25,7 +26,8 @@ import { SearchGenerateModule } from './modules/search_models_params_gen/search_
     PingModule,
     SearchUserModule,
     UserAvatarModule,
-    GlobalSearchModule
+    GlobalSearchModule,
+    FindAssetsByFilterModule
   ],
   controllers: [GatewayController],
   providers: [GatewayService],

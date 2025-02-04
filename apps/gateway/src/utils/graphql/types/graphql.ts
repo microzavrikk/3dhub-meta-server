@@ -54,6 +54,22 @@ export class UserLoginInput {
     password: string;
 }
 
+export class AssetsFilterInput {
+    categories?: Nullable<string[]>;
+    priceRange?: Nullable<PriceRangeInput>;
+    formats?: Nullable<string[]>;
+    tags?: Nullable<string[]>;
+    sortBy?: Nullable<string>;
+    assetName?: Nullable<string>;
+    page?: Nullable<number>;
+    limit?: Nullable<number>;
+}
+
+export class PriceRangeInput {
+    min?: Nullable<number>;
+    max?: Nullable<number>;
+}
+
 export class ProfileInput {
     bio?: Nullable<string>;
     socialLinks?: Nullable<JSON>;
@@ -102,6 +118,8 @@ export abstract class IQuery {
     abstract AssetsQuery(): Nullable<AssetsStorageQuery> | Promise<Nullable<AssetsStorageQuery>>;
 
     abstract Category(): Nullable<CategoryQuery> | Promise<Nullable<CategoryQuery>>;
+
+    abstract findAssetsByFilter(input: AssetsFilterInput): AssetsFilterOutput | Promise<AssetsFilterOutput>;
 
     abstract GlobalSearch(): Nullable<GlobalSearchQuery> | Promise<Nullable<GlobalSearchQuery>>;
 
@@ -200,6 +218,11 @@ export class AuthPayload {
 export class CategoryQuery {
     getCategories: string[];
     getAllCategoryInS3: string[];
+}
+
+export class AssetsFilterOutput {
+    assets: AssetOutput[];
+    totalCount: number;
 }
 
 export class GlobalSearchQuery {
