@@ -62,8 +62,15 @@ export class AssetsStorageMutationController {
         throw new HttpException('At least one file is required', HttpStatus.BAD_REQUEST);
       }
 
+      // Log total size of all files
+      const totalSize = files.reduce((acc, file) => acc + file.size, 0);
+      this.logger.log(`Total size of uploaded files: ${(totalSize / 1024 / 1024).toFixed(2)} MB`);
+
       const results = await Promise.all(
         files.map(async (file) => {
+          // Log individual file size
+          this.logger.log(`Uploading file ${file.originalname} - Size: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
+
           const fullFilePath = join(this.uploadPath, file.filename);
           // Read file content as UTF-8 string
           const fileContent = await fs.readFile(fullFilePath, 'utf8');
@@ -108,6 +115,7 @@ export class AssetsStorageMutationController {
             return {
               success: false,
               fileName: file.originalname,
+              fileSize: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
               error: 'Failed to create asset in the storage service'
             };
           }
@@ -120,6 +128,7 @@ export class AssetsStorageMutationController {
           return {
             success: true,
             fileName: file.originalname,
+            fileSize: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
             data: createAssetInput
           };
         })
@@ -139,6 +148,7 @@ export class AssetsStorageMutationController {
       return {
         message: 'Assets created successfully',
         success: true,
+        totalSize: `${(totalSize / 1024 / 1024).toFixed(2)} MB`,
         data: results
       };
 

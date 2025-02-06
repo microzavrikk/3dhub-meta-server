@@ -16,6 +16,7 @@ import { AssetsStorageQueryController } from "./controllers/assets-storage.query
         transport: Transport.NATS,
         options: {
           servers: ['nats://localhost:4222'],
+          maxPayload: 104857600, // 100MB max payload size
         },
       },
     ]),

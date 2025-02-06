@@ -108,25 +108,38 @@ export class AssetsHandlerS3Repository {
       throw new Error(`File with key ${fileKey} already exists`);
     }
     
-    this.logger.log(`Uploading file: ${fileKey}, ${data.file.buffer.length} bytes`);
+    this.logger.log(`Uploading file: ${fileKey}, size: ${data.file.buffer.length} bytes`);
 
+    // Минимальный набор параметров для сохранения оригинального размера
     const uploadParams = {
       Bucket: this.bucketName,
       Key: fileKey,
-      Body: data.file.buffer,
-      ContentType: data.file.mimetype
+      Body: Buffer.from(data.file.buffer), // Создаем новый буфер из оригинального
+      ContentType: 'application/octet-stream'
     };
 
     try {
-      const data = await this.s3.upload(uploadParams).promise();
+      const uploadedData = await this.s3.upload(uploadParams, {
+        // Отключаем многопоточную загрузку для маленьких файлов
+        partSize: 5 * 1024 * 1024, // 5MB
+        queueSize: 1
+      }).promise();
+      
+      const objectInfo = await this.s3.headObject({
+        Bucket: this.bucketName,
+        Key: fileKey
+      }).promise();
+      
+      this.logger.log(`Original size: ${data.file.buffer.length} bytes, S3 stored size: ${objectInfo.ContentLength} bytes`);
+
       const signedUrl = await this.s3.getSignedUrlPromise('getObject', {
         Bucket: this.bucketName,
         Key: fileKey,
         Expires: this.urlExpirationTime
       });
-      this.logger.log(`File uploaded successfully. Signed URL: ${signedUrl}`);
+
       return {
-        ...data,
+        ...uploadedData,
         Location: signedUrl
       };
     } catch (error: any) {

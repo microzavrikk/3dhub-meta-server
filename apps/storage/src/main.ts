@@ -9,6 +9,10 @@ async function bootstrap() {
     transport: Transport.NATS,
     options: {
       servers: ['nats://localhost:4222'],
+      maxPayload: 100 * 1024 * 1024, // 100MB
+      payload: {
+        maxBytes: 100 * 1024 * 1024, // 100MB
+      }
     },
   });
   await app.listen();

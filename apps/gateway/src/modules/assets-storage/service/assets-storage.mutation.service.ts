@@ -8,6 +8,7 @@ import { join } from 'path';
 export class AssetsStorageService {
   private readonly logger = new Logger(AssetsStorageService.name);
   private readonly uploadPath = join(process.cwd(), 'assets-service');
+  private readonly maxPayloadSize = 100 * 1024 * 1024; // 100MB
 
   constructor(
     @Inject('ASSETS_HANDLER_SERVICE') private readonly client: ClientProxy
@@ -51,29 +52,43 @@ export class AssetsStorageService {
     };
 
     try {
+      const fileSize = file.size;
+      if (fileSize > this.maxPayloadSize) {
+        throw new Error(`File size ${(fileSize / 1024 / 1024).toFixed(2)}MB exceeds maximum allowed size of ${this.maxPayloadSize / 1024 / 1024}MB`);
+      }
+
+      this.logger.log(`File size: ${(fileSize / 1024 / 1024).toFixed(2)} MB`);
+
       // Save file to assets-service directory
       const filePath = join(this.uploadPath, file.filename);
-      const fileContent = file.buffer.toString('utf8');
-      await fs.writeFile(filePath, fileContent, 'utf8');
+      await fs.writeFile(filePath, file.buffer); // Write binary data directly
 
       const fileData = {
         originalname: file.originalname,
         filename: file.filename,
-        mimetype: `${file.mimetype}; charset=utf-8`,
-        size: file.size,
+        mimetype: file.mimetype,
+        size: fileSize,
         path: filePath,
-        buffer: fileContent
+        // Convert buffer to base64 for NATS transmission
+        buffer: file.buffer.toString('base64')
       };    
 
-      // Save fileData to txt file
+      // Save fileData to txt file (optional, for debugging)
       const fileDataPath = join(this.uploadPath, 'fileData.txt');
-      await fs.writeFile(fileDataPath, JSON.stringify(fileData, null, 2), 'utf8');
+      await fs.writeFile(fileDataPath, JSON.stringify({
+        ...fileData,
+        buffer: `<Buffer length: ${fileSize}>`  // Don't write the actual buffer to log
+      }, null, 2));
+      
       this.logger.log(`File data saved to: ${fileDataPath}`);
-  
+
+      console.log("Try to send file to NATS")
       await this.client.send({ cmd: 'upload-asset' }, { 
-        newAsset, 
+        newAsset,
         file: fileData 
       }).toPromise();
+      console.log("File sent to NATS")
+      
       return true;
     } catch (error: any) {
       this.logger.error(`Failed to create asset: ${error.message}`);

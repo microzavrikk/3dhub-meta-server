@@ -50,12 +50,15 @@ export class AssetsHandlerService {
       return false;
     }
   }
-
   async createAsset(data: CreateAssetDto, file: Express.Multer.File): Promise<Asset> {    
     try {
       if (!data.file) {
         throw new Error('File is required');
       }
+
+      const fileSize = data.file.size;
+      this.logger.log(`File size: ${(fileSize / 1024 / 1024).toFixed(2)} MB`);
+
       // Save data to data.txt
       const fs = require('fs');
       const path = require('path');
@@ -69,8 +72,9 @@ export class AssetsHandlerService {
         this.logger.error(`Failed to save data to file: ${err.message}`);
       }
       if (!data.newAsset.category || !data.newAsset.username || !data.newAsset.name) {
-        throw new Error('Missing required fields for fileKey generation');
+
       }
+      
       const fileKey = `${data.newAsset.category}/${data.newAsset.username}/${data.newAsset.name}/${data.file.originalname}`;
       this.logger.log(`Generated fileKey: ${fileKey}`);
 

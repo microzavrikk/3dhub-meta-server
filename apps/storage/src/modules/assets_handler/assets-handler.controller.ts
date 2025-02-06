@@ -22,6 +22,9 @@ export class AssetsHandlerController {
     @MessagePattern({ cmd: 'upload-asset' })
     async uploadAsset(data: CreateAssetDto, file: Express.Multer.File): Promise<boolean> {
         try {
+            const fileSize = data.file.size;
+            this.logger.log(`Uploading file. Size: ${(fileSize / 1024 / 1024).toFixed(2)} MB`);
+            
             await this.assetsHandlerService.createAsset(data, data.file);
             return true;
         } catch (error: any) {
