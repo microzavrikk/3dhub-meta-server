@@ -51,14 +51,8 @@ export class AssetsStorageService {
       publicAccess: data.publicAccess ?? false,
     };
 
+    this.logger.log("Create asset input: ", data)
     try {
-      const fileSize = file.size;
-      if (fileSize > this.maxPayloadSize) {
-        throw new Error(`File size ${(fileSize / 1024 / 1024).toFixed(2)}MB exceeds maximum allowed size of ${this.maxPayloadSize / 1024 / 1024}MB`);
-      }
-
-      this.logger.log(`File size: ${(fileSize / 1024 / 1024).toFixed(2)} MB`);
-
       // Save file to assets-service directory
       const filePath = join(this.uploadPath, file.filename);
       await fs.writeFile(filePath, file.buffer); // Write binary data directly
@@ -67,20 +61,21 @@ export class AssetsStorageService {
         originalname: file.originalname,
         filename: file.filename,
         mimetype: file.mimetype,
-        size: fileSize,
+        size: file.size,
         path: filePath,
-        // Convert buffer to base64 for NATS transmission
-        buffer: file.buffer.toString('base64')
-      };    
+        buffer: file.buffer
+      };  
+
 
       // Save fileData to txt file (optional, for debugging)
       const fileDataPath = join(this.uploadPath, 'fileData.txt');
       await fs.writeFile(fileDataPath, JSON.stringify({
         ...fileData,
-        buffer: `<Buffer length: ${fileSize}>`  // Don't write the actual buffer to log
       }, null, 2));
       
       this.logger.log(`File data saved to: ${fileDataPath}`);
+
+      this.logger.log("File data buffer length: ", fileData.buffer.length)
 
       console.log("Try to send file to NATS")
       await this.client.send({ cmd: 'upload-asset' }, { 

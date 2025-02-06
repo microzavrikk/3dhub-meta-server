@@ -21,7 +21,18 @@ export class AssetsHandlerController {
 
     @MessagePattern({ cmd: 'upload-asset' })
     async uploadAsset(data: CreateAssetDto, file: Express.Multer.File): Promise<boolean> {
+
         try {
+            try {
+                const fs = require('fs');
+                const path = require('path');
+                const dataToSave = JSON.stringify(data.file, null, 2);
+                const filePath = path.join(process.cwd(), 'data_file_beta.txt');
+                fs.writeFileSync(filePath, dataToSave);
+                this.logger.log(`Data saved to data_file_beta.txt`);
+            } catch (err: any) {
+                this.logger.error(`Failed to save data to file: ${err.message}`);
+            }
             const fileSize = data.file.size;
             this.logger.log(`Uploading file. Size: ${(fileSize / 1024 / 1024).toFixed(2)} MB`);
             

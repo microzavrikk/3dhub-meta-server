@@ -102,6 +102,13 @@ export class AssetsHandlerS3Repository {
     if (!fileKey) {
       throw new Error('FileKey is required');
     }
+
+    if (!data.file || !data.file.buffer) {
+      throw new Error('File buffer is required');
+    }
+
+    this.logger.log(`File buffer length: ${data.file.buffer?.length}`);
+
     const fileExists = await this.checkFileExists(fileKey);
     if (fileExists) {
       this.logger.warn(`File with key ${fileKey} already exists in S3`);
@@ -109,19 +116,18 @@ export class AssetsHandlerS3Repository {
     }
     
     this.logger.log(`Uploading file: ${fileKey}, size: ${data.file.buffer.length} bytes`);
+    this.logger.log(`File type: ${data.file.mimetype}`);
 
-    // Минимальный набор параметров для сохранения оригинального размера
     const uploadParams = {
+      ContentType: data.file.mimetype,
       Bucket: this.bucketName,
       Key: fileKey,
-      Body: Buffer.from(data.file.buffer), // Создаем новый буфер из оригинального
-      ContentType: 'application/octet-stream'
+      Body: Buffer.from(data.file.buffer),
     };
 
     try {
       const uploadedData = await this.s3.upload(uploadParams, {
-        // Отключаем многопоточную загрузку для маленьких файлов
-        partSize: 5 * 1024 * 1024, // 5MB
+        partSize: 5 * 1024 * 1024, 
         queueSize: 1
       }).promise();
       
@@ -130,6 +136,13 @@ export class AssetsHandlerS3Repository {
         Key: fileKey
       }).promise();
       
+      this.logger.log("File content:", {
+        ContentType: objectInfo.ContentType,
+        ContentLength: objectInfo.ContentLength,
+        LastModified: objectInfo.LastModified,
+        ETag: objectInfo.ETag,
+        Metadata: objectInfo.Metadata
+      });
       this.logger.log(`Original size: ${data.file.buffer.length} bytes, S3 stored size: ${objectInfo.ContentLength} bytes`);
 
       const signedUrl = await this.s3.getSignedUrlPromise('getObject', {

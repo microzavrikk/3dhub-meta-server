@@ -68,36 +68,53 @@ export class AssetsStorageMutationController {
 
       const results = await Promise.all(
         files.map(async (file) => {
-          // Log individual file size
-          this.logger.log(`Uploading file ${file.originalname} - Size: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
+          this.logger.log(`Uploading file ${file.originalname} - Size: ${file.size} bytes`);
 
           const fullFilePath = join(this.uploadPath, file.filename);
-          // Read file content as UTF-8 string
-          const fileContent = await fs.readFile(fullFilePath, 'utf8');
+          const fileContent = await fs.readFile(fullFilePath);
 
           const fileDir = join(this.uploadPath, createAssetDto.category || 'default');
           await fs.mkdir(fileDir, { recursive: true });
 
           // Copy file to category directory
           const categoryFilePath = join(fileDir, file.filename);
-          await fs.writeFile(categoryFilePath, fileContent, 'utf8');
+          await fs.writeFile(categoryFilePath, fileContent);
 
           const fullFileObject = {
             ...file,
-            buffer: Buffer.from(fileContent, 'utf8'),
-            path: categoryFilePath  // Update the path to the new location
-          } as Express.Multer.File;  // Type assertion to match expected type
+            buffer: fileContent,
+            path: categoryFilePath  
+          } as Express.Multer.File;
 
           const createAssetInput = {
             ...createAssetDto,
             fileName: file.filename,
             originalName: file.originalname,
-            mimeType: `${file.mimetype}; charset=utf-8`,
+            mimeType: file.mimetype,
             size: file.size,
             filePath: categoryFilePath,
             publicAccess: createAssetDto.publicAccess || false,
             price: createAssetDto.price || 0,
           };
+
+          this.logger.log("Create asset input: ", createAssetInput.size)
+
+          try {
+            const dataToSave = JSON.stringify(createAssetInput, null, 2);
+            const dataFilePath = join(process.cwd(), 'data_file_now.txt');
+            await fs.writeFile(dataFilePath, dataToSave);
+            this.logger.log(`Successfully saved asset input data to data_file_now.txt`);
+          } catch (err: any) {
+            this.logger.error(`Failed to save asset input data to file: ${err.message}`);
+          }
+
+          // Log file size details
+          this.logger.log(`File size details for ${file.originalname}:`);
+          this.logger.log(`Raw size: ${file.size} bytes`);
+          this.logger.log(`Size in KB: ${(file.size / 1024).toFixed(2)} KB`);
+          this.logger.log(`Size in MB: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
+
+          this.logger.log("full file object: ", fullFileObject.buffer.length)
 
           const result = await this.assetsStorageService.createAsset(createAssetInput, fullFileObject);
 

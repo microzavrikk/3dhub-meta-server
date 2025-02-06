@@ -56,8 +56,13 @@ export class AssetsHandlerService {
         throw new Error('File is required');
       }
 
-      const fileSize = data.file.size;
+      const fileSize = data.file.buffer.length;
+
+      this.logger.log("File size: ", fileSize) 
+
+
       this.logger.log(`File size: ${(fileSize / 1024 / 1024).toFixed(2)} MB`);
+
 
       // Save data to data.txt
       const fs = require('fs');
@@ -72,13 +77,12 @@ export class AssetsHandlerService {
         this.logger.error(`Failed to save data to file: ${err.message}`);
       }
       if (!data.newAsset.category || !data.newAsset.username || !data.newAsset.name) {
-
       }
       
       const fileKey = `${data.newAsset.category}/${data.newAsset.username}/${data.newAsset.name}/${data.file.originalname}`;
       this.logger.log(`Generated fileKey: ${fileKey}`);
 
-      const awsLink = await this.assetsHandlerS3Repository.uploadFile(data, fileKey, file);
+      const awsLink = await this.assetsHandlerS3Repository.uploadFile(data, fileKey, data.file);
 
       this.logger.log(`AWS Link: ${JSON.stringify(awsLink, null, 2)}`);
 
