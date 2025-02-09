@@ -27,7 +27,8 @@ export class AssetsFindByFiltersService {
           { value: 'date_desc', label: 'Newest First' },
           { value: 'date_asc', label: 'Oldest First' }
         ],
-        assetName: filters.name
+        assetName: filters.name,
+        totalCount: filters.totalCount
       };
     } catch (error: any) {
       this.logger.error(`Failed to get default filters: ${error.message}`);

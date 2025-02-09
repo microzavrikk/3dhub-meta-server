@@ -10,7 +10,7 @@ export class AssetsFindByFiltersRepository {
   async getDefaultFilters() {
     try {
       // Get total count of models
-      const totalCount = await this.prisma.thirdModel.count();
+      const totalCount = await this.prisma.thirdModel.count() || 0; // Ensure non-null by defaulting to 0
 
       // Get categories with unique titleName count
       const categoriesWithCount = await this.prisma.thirdModel.groupBy({
@@ -38,17 +38,30 @@ export class AssetsFindByFiltersRepository {
         return acc;
       }, {} as Record<string, number>);
 
+      // Get min and max prices from database
+      const priceStats = await this.prisma.thirdModel.aggregate({
+        _min: {
+          price: true
+        },
+        _max: {
+          price: true
+        }
+      });
+
+      const minPrice = priceStats._min.price || 0;
+      const maxPrice = priceStats._max.price || 1000;
+
       return {
         categories: Object.entries(categoryCounts).map(([category, count], index) => ({
           id: index.toString(),
           name: category,
           count: count
         })),
-        minPrice: 0,
-        maxPrice: 1000,
+        minPrice,
+        maxPrice,
         tags: [],
         name: '',
-        totalCount
+        totalCount // Now guaranteed to be non-null
       };
     } catch (error: any) {
       this.logger.error(`Failed to get default filters: ${error.message}`);
