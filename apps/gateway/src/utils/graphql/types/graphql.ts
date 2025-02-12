@@ -163,6 +163,7 @@ export class AssetsStorageQuery {
     getAllFilesInDatabase: AssetOutput[];
     getAllFileNamesInDatabase: string[];
     getFileByTitleName?: AssetOutput[];
+    getRandomAssets?: AssetOutput[];
 }
 
 export class AssetOutput {

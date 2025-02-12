@@ -10,8 +10,9 @@ type AssetsStorageQuery {
   getFileByUserIdAndFileName(input: GetFileByUserIdAndFileNameDto!): FileOutput!
   getFileByFileId(id: String!): AssetOutput!
   getAllFilesInDatabase: [AssetOutput!]!
-  getAllFileNamesInDatabase: [String!]!
+  getAllFileNamesInDatabase: [String!]!  
   getFileByTitleName(titleName: String!): [AssetOutput!]! # Example query: query { AssetsQuery { getFileByTitleName(titleName: "example-title") { id file awsLocation titleName name description category tags ownerId publicAccess createdAt updatedAt } } }
+  getRandomAssets(count: Int!): [AssetOutput!]! # Returns specified number of random assets
 }
 
 input GetFileByUserIdDto {

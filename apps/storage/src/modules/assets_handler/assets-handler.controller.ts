@@ -108,6 +108,11 @@ export class AssetsHandlerController {
         }
     }
 
+    @MessagePattern({ cmd: 'get-random-assets' })
+    async getRandomAssets(count: number): Promise<AssetOutput[]> {
+        return await this.assetsHandlerService.getRandomAssets(count);
+    }
+
     @MessagePattern({ cmd: 'get-file-by-title-name' })
     async getFileByTitleName(titleName: string): Promise<AssetOutput[]> {
         return await this.assetsHandlerService.getFilesByTitleName(titleName);

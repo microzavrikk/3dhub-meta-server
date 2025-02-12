@@ -21,6 +21,34 @@ export class AssetsHandlerRepository {
       }
     });
   }
+  async getRandomAssets(count: number): Promise<AssetOutput[]> {
+    // Get initial random files
+    const randomFiles = await this.prisma.thirdModel.findMany({ 
+      orderBy: { uploadDate: 'desc' }, 
+      take: count 
+    });
+    if (!randomFiles.length) throw new Error('Files not found');
+
+    const titleNames = [...new Set(randomFiles.map(file => file.name))];
+    const allMatchingFiles = await this.prisma.thirdModel.findMany({
+      where: {
+        name: {
+          in: titleNames
+        }
+      }
+    });
+
+    return allMatchingFiles.map(file => ({
+      ...file,
+      file: [file.fileKey],
+      titleName: file.name,
+      awsLocation: file.awsLocation || '',
+      category: file.category || 'default-category', 
+      createdAt: file.uploadDate?.toISOString(),
+      updatedAt: file.updatedAt?.toISOString(),
+      publicAccess: file.publicAccess || false
+    }));
+  }
 
   async getFilesByTitleName(titleName: string): Promise<AssetOutput[]> {
     const files = await this.prisma.thirdModel.findMany({ where: { name: titleName } });

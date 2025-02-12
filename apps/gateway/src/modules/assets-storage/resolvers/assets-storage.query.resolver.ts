@@ -18,6 +18,14 @@ export class AssetsStorageQueryResolver {
         return {};
     }
 
+    @ResolveField('getRandomAssets')
+    async getRandomAssets(
+        @Args('count') count: number
+    ): Promise<AssetOutput[]> {
+        const fileData = await this.assetsStorageQueryService.getRandomAssets(count);
+        return fileData;
+    }
+
     @ResolveField('getFileByUserId')
     async getFileByUserId(
         @Args('input') input: GetFileByUserIdDto
