@@ -58,6 +58,15 @@ export class AssetsStorageMutationController {
     @Body() createAssetDto: CreateAssetDto
   ) {
     try {
+      // Add CORS headers
+      const response = {
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Methods': 'POST, GET, OPTIONS',
+          'Access-Control-Allow-Headers': 'Content-Type'
+        }
+      };
+
       if (!files || files.length === 0) {
         throw new HttpException('At least one file is required', HttpStatus.BAD_REQUEST);
       }
@@ -166,7 +175,8 @@ export class AssetsStorageMutationController {
         message: 'Assets created successfully',
         success: true,
         totalSize: `${(totalSize / 1024 / 1024).toFixed(2)} MB`,
-        data: results
+        data: results,
+        ...response
       };
 
     } catch (error: any) {
