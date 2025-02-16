@@ -49,5 +49,3 @@ The project is built on a microservice architecture and consists of the followin
 - Class Validator
 - Class Transformer
 - Nodemailer for email communications
-
-## Project Structure 
